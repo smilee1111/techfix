@@ -1,0 +1,11 @@
+App_info.md
+Design_guide.md
+frontend_arch.md
+backend_arch.md
+
+
+.env
+node_modules/
+dist/
+*.log
+*.env
