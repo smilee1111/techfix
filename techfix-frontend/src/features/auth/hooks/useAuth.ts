@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { loginUser } from "@/features/auth/api/authApi";
 import type { LoginCredentials, AuthUser } from "@/features/auth/types/auth.types";
+import { setAuthToken, setUserData, clearAuthCookies } from "@/lib/cookie";
 
 interface UseAuthReturn {
   /** Currently authenticated user (null before login) */
@@ -14,6 +15,8 @@ interface UseAuthReturn {
   error: string | null;
   /** Submit login credentials */
   login: (credentials: LoginCredentials) => Promise<void>;
+  /** Clear credentials and session */
+  logout: () => void;
   /** Clear any existing error */
   clearError: () => void;
 }
@@ -37,7 +40,16 @@ export function useAuth(): UseAuthReturn {
       try {
         const response = await loginUser(credentials);
 
-        // Store token — in production use httpOnly cookies via the backend
+        // Store tokens securely via Server Action cookies
+        await setAuthToken(response.accessToken);
+        await setUserData({
+          id: response.user.id,
+          fullName: response.user.fullName,
+          email: response.user.email,
+          role: response.user.role,
+          avatarUrl: response.user.avatarUrl,
+        });
+
         if (typeof window !== "undefined") {
           localStorage.setItem("accessToken", response.accessToken);
         }
@@ -56,7 +68,18 @@ export function useAuth(): UseAuthReturn {
     [router],
   );
 
+  const logout = useCallback(async () => {
+    // Clear cookies and session via Server Action
+    await clearAuthCookies();
+
+    if (typeof window !== "undefined") {
+      localStorage.removeItem("accessToken");
+    }
+    setUser(null);
+    router.push("/login");
+  }, [router]);
+
   const clearError = useCallback(() => setError(null), []);
 
-  return { user, isLoading, error, login, clearError };
+  return { user, isLoading, error, login, logout, clearError };
 }

@@ -3,15 +3,14 @@ import type {
   RegisterCredentials,
   AuthResponse,
 } from "@/features/auth/types/auth.types";
-
-const API_BASE_URL = process.env.NEXT_PUBLIC_API_URL ?? "http://localhost:5000/api";
+import { ENDPOINTS } from "@/lib/endpoints";
 
 /**
  * Authenticates a user with email and password.
  * All raw API calls are centralised here — never call fetch from components.
  */
 export async function loginUser(credentials: LoginCredentials): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/login`, {
+  const response = await fetch(ENDPOINTS.auth.login, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
     body: JSON.stringify(credentials),
@@ -22,7 +21,18 @@ export async function loginUser(credentials: LoginCredentials): Promise<AuthResp
     throw new Error(error.message ?? "Invalid email or password");
   }
 
-  return response.json();
+  const result = await response.json();
+  return {
+    user: {
+      id: result.data.user._id,
+      fullName: result.data.user.name,
+      email: result.data.user.email,
+      role: result.data.user.role,
+      avatarUrl: result.data.user.avatar,
+    },
+    accessToken: result.data.accessToken,
+    refreshToken: "", // set in secure httpOnly cookie by backend
+  };
 }
 
 /**
@@ -32,10 +42,18 @@ export async function loginUser(credentials: LoginCredentials): Promise<AuthResp
 export async function registerUser(
   credentials: RegisterCredentials,
 ): Promise<AuthResponse> {
-  const response = await fetch(`${API_BASE_URL}/auth/register`, {
+  const payload = {
+    name: credentials.fullName,
+    email: credentials.email,
+    phone: credentials.phone,
+    password: credentials.password,
+    role: credentials.role,
+  };
+
+  const response = await fetch(ENDPOINTS.auth.register, {
     method: "POST",
     headers: { "Content-Type": "application/json" },
-    body: JSON.stringify(credentials),
+    body: JSON.stringify(payload),
   });
 
   if (!response.ok) {
@@ -45,7 +63,18 @@ export async function registerUser(
     throw new Error(error.message ?? "Could not create account");
   }
 
-  return response.json();
+  const result = await response.json();
+  return {
+    user: {
+      id: result.data.user._id,
+      fullName: result.data.user.name,
+      email: result.data.user.email,
+      role: result.data.user.role,
+      avatarUrl: result.data.user.avatar,
+    },
+    accessToken: result.data.accessToken,
+    refreshToken: "", // set in secure httpOnly cookie by backend
+  };
 }
 
 /**
@@ -53,6 +82,6 @@ export async function registerUser(
  * Redirects the browser to the backend OAuth flow.
  */
 export function initiateOAuthLogin(provider: "google" | "facebook"): void {
-  window.location.href = `${API_BASE_URL}/auth/${provider}`;
+  window.location.href = ENDPOINTS.auth.socialLogin(provider);
 }
 

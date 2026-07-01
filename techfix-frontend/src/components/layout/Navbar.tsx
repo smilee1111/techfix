@@ -66,8 +66,9 @@ export default function Navbar({ variant = "loggedOut" }: NavbarProps) {
           </div>
 
           {/* Cart icon */}
-          <Link href="/cart" className="navbar__cart" aria-label="Shopping cart">
+          <Link href="/cart" className="navbar__cart" aria-label="Shopping cart with 2 items">
             <ShoppingCart size={16} />
+            <span className="navbar__cart-badge">2</span>
           </Link>
 
           {variant === "loggedOut" ? (

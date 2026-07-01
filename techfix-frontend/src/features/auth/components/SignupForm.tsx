@@ -52,8 +52,8 @@ export default function SignupForm() {
 
     if (!phone.trim()) {
       errors.phone = "Phone number is required";
-    } else if (!/^[+]?[\d\s()-]{7,20}$/.test(phone)) {
-      errors.phone = "Enter a valid phone number";
+    } else if (!/^\+977-?\d{10}$/.test(phone)) {
+      errors.phone = "Phone must be in Nepali format: +977-XXXXXXXXXX";
     }
 
     if (!password) {
@@ -200,7 +200,7 @@ export default function SignupForm() {
                 id="signup-phone"
                 type="tel"
                 autoComplete="tel"
-                placeholder="+1 (555) 000-0000"
+                placeholder="+977-9800000000"
                 value={phone}
                 onChange={(e) => {
                   setPhone(e.target.value);

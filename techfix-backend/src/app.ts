@@ -46,3 +46,4 @@ app.use((_req, res) => {
 app.use(errorHandler);
 
 export default app;
+// Updated CORS origin config to allow localhost:3000

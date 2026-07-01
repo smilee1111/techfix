@@ -4,6 +4,7 @@ import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { registerUser } from "@/features/auth/api/authApi";
 import type { RegisterCredentials, AuthUser } from "@/features/auth/types/auth.types";
+import { setAuthToken, setUserData } from "@/lib/cookie";
 
 interface UseSignupReturn {
   /** The newly registered user (null until success) */
@@ -37,7 +38,16 @@ export function useSignup(): UseSignupReturn {
       try {
         const response = await registerUser(credentials);
 
-        // Store token — in production use httpOnly cookies via the backend
+        // Store tokens securely via Server Action cookies
+        await setAuthToken(response.accessToken);
+        await setUserData({
+          id: response.user.id,
+          fullName: response.user.fullName,
+          email: response.user.email,
+          role: response.user.role,
+          avatarUrl: response.user.avatarUrl,
+        });
+
         if (typeof window !== "undefined") {
           localStorage.setItem("accessToken", response.accessToken);
         }
