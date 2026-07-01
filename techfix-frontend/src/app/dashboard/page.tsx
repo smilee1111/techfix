@@ -5,30 +5,30 @@ import Navbar from "@/components/layout/Navbar";
 import Footer from "@/components/layout/Footer";
 
 export const metadata: Metadata = {
-  title: "TechFix — Tech Repair & Product Marketplace",
+  title: "Dashboard — TechFix",
   description:
-    "Professional hardware logistics and repair ecosystems. Find certified repair services, get instant price estimates, or shop verified devices in Nepal.",
+    " Nepal's trusted platform for device repairs, certified tech products, and repair tracking. Welcome back to your TechFix dashboard.",
 };
 
 /**
- * Server-side Rendered (SSR) Homepage.
- * Renders layout headers, hero section with search database,
- * core repair services cards, and store product links.
+ * Server-side Rendered (SSR) User Dashboard page.
+ * Rendered when the user is logged in. Composes layouts and service options
+ * with the logged-in navbar variant.
  * Contains zero business logic per the separation of concerns guidelines.
  */
-export default function HomePage() {
+export default function DashboardPage() {
   return (
     <>
-      {/* Sticky top navbar */}
-      <Navbar variant="loggedOut" />
+      {/* Sticky top navbar (loggedIn variant) */}
+      <Navbar variant="loggedIn" />
 
       {/* Main content wrapper */}
       <main className="flex-1 flex flex-col justify-start items-center">
-        <section className="home" aria-labelledby="hero-title">
+        <section className="home" aria-labelledby="dashboard-title">
           {/* Hero Section */}
           <div className="home__hero">
             <div className="home__hero-header">
-              <h1 id="hero-title" className="home__hero-title">
+              <h1 id="dashboard-title" className="home__hero-title">
                 Tech repair, done right.
               </h1>
               <p className="home__hero-subtitle">
@@ -43,7 +43,7 @@ export default function HomePage() {
                 <span className="home__search-dot" aria-hidden="true" />
                 <input
                   type="search"
-                  id="home-search-input"
+                  id="dashboard-search-input"
                   placeholder="Search device or problem..."
                   className="home__search-input"
                   aria-label="Search devices or problems"

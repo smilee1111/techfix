@@ -2,10 +2,12 @@ App_info.md
 Design_guide.md
 frontend_arch.md
 backend_arch.md
-
+database_design.md
+env.ts
 
 .env
 node_modules/
 dist/
 *.log
 *.env
+.agents/
