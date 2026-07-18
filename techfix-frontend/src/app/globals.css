@@ -306,7 +306,6 @@ body {
   display: flex;
   align-items: center;
   gap: 20px;
-  overflow: hidden;
 }
 
 .navbar__search {
@@ -376,6 +375,15 @@ body {
 }
 .navbar__login-link:hover {
   color: var(--color-action-secondary);
+}
+
+.navbar__logout-btn {
+  background: none;
+  border: none;
+  padding: 0;
+  margin: 0;
+  font: inherit;
+  cursor: pointer;
 }
 
 .navbar__cta {
