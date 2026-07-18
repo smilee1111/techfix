@@ -92,9 +92,8 @@ const userSchema = new Schema<IUserDocument>(
   }
 );
 
-// ─── Indexes (from database_design.md) ──────────────────────────
-userSchema.index({ email: 1 }, { unique: true });
-userSchema.index({ phone: 1 }, { unique: true });
+// Note: email/phone already get a unique index from `unique: true` above —
+// declaring it again here caused Mongoose's duplicate-schema-index warning.
 
 // ─── Pre-save hook: hash password ───────────────────────────────
 userSchema.pre("save", async function () {
