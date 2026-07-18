@@ -64,7 +64,7 @@ export class AuthRepository {
     data: Partial<IUserDocument>
   ): Promise<IUserDocument | null> {
     return User.findByIdAndUpdate(id, data, {
-      new: true,
+      returnDocument: "after",
       runValidators: true,
     }).exec();
   }
@@ -79,7 +79,7 @@ export class AuthRepository {
     return User.findByIdAndUpdate(
       id,
       { refreshToken },
-      { new: true }
+      { returnDocument: "after" }
     ).exec();
   }
 
@@ -90,7 +90,7 @@ export class AuthRepository {
     return User.findByIdAndUpdate(
       id,
       { $unset: { refreshToken: 1 } },
-      { new: true }
+      { returnDocument: "after" }
     ).exec();
   }
 
@@ -104,7 +104,7 @@ export class AuthRepository {
     return User.findByIdAndUpdate(
       userId,
       { $push: { addresses: address } },
-      { new: true, runValidators: true }
+      { returnDocument: "after", runValidators: true }
     ).exec();
   }
 
