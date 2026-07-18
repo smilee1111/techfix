@@ -14,6 +14,12 @@ import { UnauthorizedError } from "../../errors/UnauthorizedError";
 import { NotFoundError } from "../../errors/NotFoundError";
 import { ValidationError } from "../../errors/ValidationError";
 import { IUserDocument } from "../models/user.model";
+import { sendMail } from "../../utils/mailer";
+
+interface IResetTokenPayload {
+  userId: string;
+  purpose: "password_reset";
+}
 
 /**
  * Auth Service
@@ -230,6 +236,61 @@ export class AuthService {
     await this.authRepository.clearRefreshToken(userId);
 
     return { message: "Password changed successfully. Please log in again." };
+  }
+
+  // ─── Forgot Password ──────────────────────────────────────────
+
+  async forgotPassword(email: string) {
+    const user = await this.authRepository.findByEmail(email);
+
+    // Always return a generic message — never reveal whether the email exists.
+    if (user) {
+      const resetToken = jwt.sign(
+        { userId: user._id.toString(), purpose: "password_reset" } as IResetTokenPayload,
+        env.RESET_PASSWORD_SECRET,
+        { expiresIn: env.RESET_PASSWORD_EXPIRES_IN } as jwt.SignOptions
+      );
+
+      const resetLink = `${env.FRONTEND_URL}/reset-password?token=${resetToken}`;
+
+      await sendMail({
+        to: user.email,
+        subject: "Reset your TechFix password",
+        html: `<p>Click the link below to reset your password. This link expires in ${env.RESET_PASSWORD_EXPIRES_IN}.</p><p><a href="${resetLink}">${resetLink}</a></p>`,
+      });
+    }
+
+    return {
+      message: "If an account with that email exists, a reset link has been sent.",
+    };
+  }
+
+  // ─── Reset Password ───────────────────────────────────────────
+
+  async resetPassword(token: string, newPassword: string) {
+    let decoded: IResetTokenPayload;
+    try {
+      decoded = jwt.verify(token, env.RESET_PASSWORD_SECRET) as IResetTokenPayload;
+    } catch {
+      throw new UnauthorizedError("Invalid or expired reset link");
+    }
+
+    if (decoded.purpose !== "password_reset") {
+      throw new UnauthorizedError("Invalid or expired reset link");
+    }
+
+    const user = await this.authRepository.findById(decoded.userId);
+    if (!user) {
+      throw new NotFoundError("User");
+    }
+
+    user.password = newPassword;
+    await user.save();
+
+    // Invalidate existing sessions
+    await this.authRepository.clearRefreshToken(decoded.userId);
+
+    return { message: "Password reset successfully. Please log in with your new password." };
   }
 
   // ─── Add Address ──────────────────────────────────────────────

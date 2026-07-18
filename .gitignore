@@ -3,11 +3,12 @@ Design_guide.md
 frontend_arch.md
 backend_arch.md
 database_design.md
-env.ts
 
 .env
 node_modules/
 dist/
+coverage/
 *.log
 *.env
+*.tsbuildinfo
 .agents/

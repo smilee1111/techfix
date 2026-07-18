@@ -19,8 +19,8 @@ export const metadata: Metadata = {
 export default function DashboardPage() {
   return (
     <>
-      {/* Sticky top navbar (loggedIn variant) */}
-      <Navbar variant="loggedIn" />
+      {/* Sticky top navbar — reflects the real session */}
+      <Navbar />
 
       {/* Main content wrapper */}
       <main className="flex-1 flex flex-col justify-start items-center">

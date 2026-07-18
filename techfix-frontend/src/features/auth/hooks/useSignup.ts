@@ -38,7 +38,8 @@ export function useSignup(): UseSignupReturn {
       try {
         const response = await registerUser(credentials);
 
-        // Store tokens securely via Server Action cookies
+        // Store the access token in an httpOnly cookie via Server Action —
+        // never mirror it into localStorage, or an XSS bug gets it for free.
         await setAuthToken(response.accessToken);
         await setUserData({
           id: response.user.id,
@@ -47,10 +48,6 @@ export function useSignup(): UseSignupReturn {
           role: response.user.role,
           avatarUrl: response.user.avatarUrl,
         });
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", response.accessToken);
-        }
 
         setUser(response.user);
 

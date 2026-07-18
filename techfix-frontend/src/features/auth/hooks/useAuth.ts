@@ -2,9 +2,9 @@
 
 import { useState, useCallback } from "react";
 import { useRouter } from "next/navigation";
-import { loginUser } from "@/features/auth/api/authApi";
+import { loginUser, logoutUser } from "@/features/auth/api/authApi";
 import type { LoginCredentials, AuthUser } from "@/features/auth/types/auth.types";
-import { setAuthToken, setUserData, clearAuthCookies } from "@/lib/cookie";
+import { setAuthToken, setUserData, clearAuthCookies, getAuthToken } from "@/lib/cookie";
 
 interface UseAuthReturn {
   /** Currently authenticated user (null before login) */
@@ -40,7 +40,8 @@ export function useAuth(): UseAuthReturn {
       try {
         const response = await loginUser(credentials);
 
-        // Store tokens securely via Server Action cookies
+        // Store the access token in an httpOnly cookie via Server Action —
+        // never mirror it into localStorage, or an XSS bug gets it for free.
         await setAuthToken(response.accessToken);
         await setUserData({
           id: response.user.id,
@@ -49,10 +50,6 @@ export function useAuth(): UseAuthReturn {
           role: response.user.role,
           avatarUrl: response.user.avatarUrl,
         });
-
-        if (typeof window !== "undefined") {
-          localStorage.setItem("accessToken", response.accessToken);
-        }
 
         setUser(response.user);
 
@@ -69,12 +66,14 @@ export function useAuth(): UseAuthReturn {
   );
 
   const logout = useCallback(async () => {
-    // Clear cookies and session via Server Action
-    await clearAuthCookies();
-
-    if (typeof window !== "undefined") {
-      localStorage.removeItem("accessToken");
+    // Invalidate the refresh token server-side before clearing local cookies,
+    // so a leaked cookie can't be replayed after the user thinks they're out.
+    const token = await getAuthToken();
+    if (token) {
+      await logoutUser(token);
     }
+
+    await clearAuthCookies();
     setUser(null);
     router.push("/login");
   }, [router]);
