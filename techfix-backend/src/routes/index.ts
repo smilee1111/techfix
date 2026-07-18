@@ -1,5 +1,7 @@
 import { Router, Application } from "express";
 import authRoutes from "../auth/routes/auth.routes";
+import categoryRoutes from "../categories/routes/category.routes";
+import repairRoutes from "../repairs/routes/repair.routes";
 
 
 /**
@@ -12,8 +14,9 @@ export const registerRoutes = (app: Application): void => {
 
   // ─── Feature routes ─────────────────────────────────────────
   apiRouter.use("/auth", authRoutes);
+  apiRouter.use("/categories", categoryRoutes);
+  apiRouter.use("/repairs", repairRoutes);
 
-  // apiRouter.use("/repairs", repairRoutes);    // TODO
   // apiRouter.use("/products", productRoutes);  // TODO
   // apiRouter.use("/bookings", bookingRoutes);  // TODO
   // apiRouter.use("/orders", orderRoutes);      // TODO
