@@ -35,3 +35,16 @@ export type AuthErrorCode =
   | "EMAIL_ALREADY_EXISTS"
   | "ACCOUNT_LOCKED"
   | "NETWORK_ERROR";
+
+/** Full profile shape returned from GET /api/auth/me */
+export interface AccountProfile {
+  id: string;
+  fullName: string;
+  email: string;
+  phone: string;
+  role: "customer" | "seller" | "repair_provider" | "admin";
+  avatarUrl?: string;
+  isVerified: boolean;
+  isVerifiedSeller: boolean;
+  createdAt: string;
+}
