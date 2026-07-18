@@ -1,8 +1,11 @@
 "use client";
 
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, ShoppingCart } from "lucide-react";
+import { getAuthToken } from "@/lib/cookie";
+import { useAuth } from "@/features/auth/hooks/useAuth";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 interface NavLink {
@@ -11,7 +14,12 @@ interface NavLink {
 }
 
 interface NavbarProps {
-  /** Controls which right-side actions render */
+  /**
+   * Forces a variant instead of checking the real session — only use this
+   * for pages an authenticated user can never legitimately reach (e.g. the
+   * login form itself). Omit it everywhere else so the navbar reflects the
+   * actual session.
+   */
   variant?: "loggedOut" | "loggedIn";
 }
 
@@ -26,10 +34,28 @@ const NAV_LINKS: NavLink[] = [
 /* ─── Component ──────────────────────────────────────────────────── */
 /**
  * Shared sticky navbar — zero business logic.
- * Highlights the active route automatically.
+ * Highlights the active route automatically. When `variant` isn't forced,
+ * derives logged-in/out state from the real auth cookie rather than
+ * trusting the page to know the visitor's session.
  */
-export default function Navbar({ variant = "loggedOut" }: NavbarProps) {
+export default function Navbar({ variant: forcedVariant }: NavbarProps) {
   const pathname = usePathname();
+  const { logout } = useAuth();
+  const [detectedVariant, setDetectedVariant] = useState<"loggedOut" | "loggedIn">("loggedOut");
+
+  useEffect(() => {
+    if (forcedVariant) return;
+
+    let cancelled = false;
+    getAuthToken().then((token) => {
+      if (!cancelled) setDetectedVariant(token ? "loggedIn" : "loggedOut");
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, [forcedVariant]);
+
+  const variant = forcedVariant ?? detectedVariant;
 
   return (
     <header className="navbar">
@@ -81,10 +107,18 @@ export default function Navbar({ variant = "loggedOut" }: NavbarProps) {
               </Link>
             </>
           ) : (
-            /* Future: account menu for logged-in users */
-            <Link href="/account" className="navbar__login-link">
-              Account
-            </Link>
+            <>
+              <Link href="/account" className="navbar__login-link">
+                Account
+              </Link>
+              <button
+                type="button"
+                onClick={logout}
+                className="navbar__login-link navbar__logout-btn"
+              >
+                Log Out
+              </button>
+            </>
           )}
         </div>
       </div>

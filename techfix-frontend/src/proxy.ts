@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 
 // Public routes accessible without logging in
-const publicPaths = ["/", "/login", "/signup", "/register", "/forget-password"];
+const publicPaths = ["/", "/login", "/signup", "/forgot-password", "/reset-password"];
 
 // Admin-only routes
 const adminOnlyPaths = ["/admin", "/users"];
@@ -68,7 +68,7 @@ export async function proxy(req: NextRequest) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
 
-  // Logged in user should not access public pages (/, login, signup, register, etc.)
+  // Logged in user should not access public pages (/, login, signup, etc.)
   if (user && isPublicPath) {
     return NextResponse.redirect(new URL("/dashboard", req.url));
   }
@@ -82,9 +82,11 @@ export const config = {
     "/users/:path*",
     "/seller/:path*",
     "/dashboard/:path*",
+    "/account/:path*",
     "/login",
     "/signup",
-    "/register",
+    "/forgot-password",
+    "/reset-password",
     "/",
   ],
 };
