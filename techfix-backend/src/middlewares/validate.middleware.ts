@@ -32,8 +32,17 @@ export const validate = (
       return;
     }
 
-    // Replace with parsed (coerced + defaulted) data
-    req[source] = result.data;
+    // Replace with parsed (coerced + defaulted) data.
+    // Express 5 defines `req.query` as a getter-only accessor, so a plain
+    // assignment throws ("Cannot set property query ... only a getter").
+    // Redefining the property works for all three sources and is a no-op
+    // change in behavior for body/params, which were plain writable fields.
+    Object.defineProperty(req, source, {
+      value: result.data,
+      writable: true,
+      enumerable: true,
+      configurable: true,
+    });
     next();
   };
 };
