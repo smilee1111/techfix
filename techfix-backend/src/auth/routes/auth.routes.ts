@@ -10,6 +10,8 @@ import {
   updateProfileDto,
   changePasswordDto,
   addAddressDto,
+  forgotPasswordDto,
+  resetPasswordDto,
 } from "../dtos/auth.dto";
 
 const router = Router();
@@ -38,6 +40,22 @@ router.post(
   "/refresh",
   authLimiter,
   authController.refreshToken
+);
+
+// POST /api/auth/forgot-password
+router.post(
+  "/forgot-password",
+  authLimiter,
+  validate(forgotPasswordDto),
+  authController.forgotPassword
+);
+
+// POST /api/auth/reset-password
+router.post(
+  "/reset-password",
+  authLimiter,
+  validate(resetPasswordDto),
+  authController.resetPassword
 );
 
 // ─── Protected routes (auth required) ───────────────────────────

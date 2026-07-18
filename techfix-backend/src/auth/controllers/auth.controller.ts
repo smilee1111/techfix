@@ -145,6 +145,39 @@ export class AuthController {
     }
   };
 
+  // ─── POST /auth/forgot-password ───────────────────────────────
+
+  forgotPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const result = await this.authService.forgotPassword(req.body.email);
+      res.status(200).json({ success: true, message: result.message });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // ─── POST /auth/reset-password ────────────────────────────────
+
+  resetPassword = async (
+    req: Request,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const result = await this.authService.resetPassword(
+        req.body.token,
+        req.body.newPassword
+      );
+      res.status(200).json({ success: true, message: result.message });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   // ─── GET /auth/me ─────────────────────────────────────────────
 
   getProfile = async (
