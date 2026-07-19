@@ -49,6 +49,15 @@ export const errorHandler = (
     return;
   }
 
+  // ── Multer upload errors (file too large, too many files, etc.) ─
+  if (err.name === "MulterError") {
+    res.status(400).json({
+      success: false,
+      message: err.message,
+    });
+    return;
+  }
+
   // ── JWT errors ──────────────────────────────────────────────
   if (err.name === "JsonWebTokenError") {
     res.status(401).json({

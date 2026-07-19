@@ -39,6 +39,12 @@ const envSchema = z.object({
     .string()
     .default("http://localhost:3000")
     .transform((val) => val.replace(/\/+$/, "")),
+
+  // Optional — photo upload returns a clear 503 if these aren't set, rather
+  // than the whole server failing to boot before you've set up an account.
+  CLOUDINARY_CLOUD_NAME: z.string().optional(),
+  CLOUDINARY_API_KEY: z.string().optional(),
+  CLOUDINARY_API_SECRET: z.string().optional(),
 });
 
 const parsed = envSchema.safeParse(process.env);
