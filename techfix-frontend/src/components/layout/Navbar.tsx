@@ -4,7 +4,7 @@ import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { Search, ShoppingCart } from "lucide-react";
-import { getAuthToken } from "@/lib/cookie";
+import { getValidAccessToken } from "@/lib/session";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
@@ -47,7 +47,7 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
     if (forcedVariant) return;
 
     let cancelled = false;
-    getAuthToken().then((token) => {
+    getValidAccessToken().then((token) => {
       if (!cancelled) setDetectedVariant(token ? "loggedIn" : "loggedOut");
     });
     return () => {
