@@ -1,8 +1,10 @@
 // ─── User Roles ──────────────────────────────────────────────────
+// Exactly 3 roles. "seller" covers anyone listing something on the
+// marketplace — repair providers and product sellers alike — there is
+// no separate repair_provider role.
 export const UserRole = {
   CUSTOMER: "customer",
   SELLER: "seller",
-  REPAIR_PROVIDER: "repair_provider",
   ADMIN: "admin",
 } as const;
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
@@ -41,6 +43,17 @@ export const BookingType = {
   ON_SITE: "on_site",
 } as const;
 export type BookingTypeType = (typeof BookingType)[keyof typeof BookingType];
+
+// ─── Booking Payment Method (booking-time preference, not a real gateway
+// charge yet — separate from PaymentMethod, which is Nepal-specific and
+// used for actual product-order payment integration) ────────────────────
+export const BookingPaymentMethod = {
+  CARD: "card",
+  DIGITAL_WALLET: "digital_wallet",
+  PAY_AT_PICKUP: "pay_at_pickup",
+} as const;
+export type BookingPaymentMethodType =
+  (typeof BookingPaymentMethod)[keyof typeof BookingPaymentMethod];
 
 // ─── Repair Stages (5-stage timeline from Design_guide.md) ──────
 export const RepairStage = {

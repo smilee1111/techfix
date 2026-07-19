@@ -39,6 +39,11 @@ export class RepairService {
     return { repairService };
   }
 
+  async getMine(providerId: string) {
+    const items = await this.repairRepository.findByProvider(providerId);
+    return { items };
+  }
+
   async compare(ids: string[]) {
     const items = await this.repairRepository.findByIds(ids);
     if (items.length === 0) {

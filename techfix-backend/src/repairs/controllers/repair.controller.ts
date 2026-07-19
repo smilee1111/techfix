@@ -41,6 +41,19 @@ export class RepairController {
     }
   };
 
+  getMine = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const result = await this.repairService.getMine(req.user!.userId);
+      res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   compare = async (
     req: AuthenticatedRequest,
     res: Response,

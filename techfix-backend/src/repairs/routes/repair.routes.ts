@@ -17,17 +17,26 @@ router.get("/", validate(searchRepairsDto, "query"), repairController.search);
 // Registered before "/:id" so "compare" isn't swallowed as an :id param.
 router.get("/compare", validate(compareRepairsDto, "query"), repairController.compare);
 
-// GET /api/repairs/:id
-router.get("/:id", repairController.getById);
+// ─── Seller-only routes ────────────────────────────────────────────
+// Registered before "/:id" so "mine" isn't swallowed as an :id param.
 
-// ─── Provider-only routes ─────────────────────────────────────────
+// GET /api/repairs/mine — the logged-in seller's own listings
+router.get(
+  "/mine",
+  authenticate,
+  authorize(UserRole.SELLER, UserRole.ADMIN),
+  repairController.getMine
+);
 
 router.post(
   "/",
   authenticate,
-  authorize(UserRole.REPAIR_PROVIDER, UserRole.ADMIN),
+  authorize(UserRole.SELLER, UserRole.ADMIN),
   validate(createRepairServiceDto),
   repairController.create
 );
+
+// GET /api/repairs/:id
+router.get("/:id", repairController.getById);
 
 export default router;

@@ -30,6 +30,18 @@ export class RepairRepository {
   }
 
   /**
+   * A seller's own listings, including inactive ones — unlike the public
+   * find methods, this intentionally does not filter by isActive so a
+   * seller can see (and eventually re-activate) everything they own.
+   */
+  async findByProvider(providerId: string): Promise<IRepairServiceDocument[]> {
+    return RepairService.find({ provider: providerId })
+      .populate("category", CATEGORY_FIELDS)
+      .sort({ createdAt: -1 })
+      .exec();
+  }
+
+  /**
    * Search/list repair services with filters, sorting and pagination.
    * Uses $geoNear (via aggregation) when the caller supplies a location,
    * since $geoNear must be the first stage and needs the 2dsphere index.

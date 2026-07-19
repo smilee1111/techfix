@@ -21,7 +21,6 @@ function formatMemberSince(iso: string): string {
 const ROLE_LABELS: Record<string, string> = {
   customer: "Customer",
   seller: "Seller",
-  repair_provider: "Repair Provider",
   admin: "Admin",
 };
 
@@ -117,7 +116,18 @@ export default function AccountProfile() {
       <div className="account__body">
         {/* Sidebar */}
         <nav className="account__sidebar" aria-label="Account navigation">
-          <a href="/my-repairs" className="account__nav-item account__nav-item--active">
+          {profile.role === "seller" && (
+            <>
+              <a href="/seller/dashboard" className="account__nav-item account__nav-item--active">
+                Seller Dashboard <span aria-hidden>→</span>
+              </a>
+              <div className="account__nav-divider" />
+            </>
+          )}
+          <a
+            href="/my-repairs"
+            className={`account__nav-item ${profile.role !== "seller" ? "account__nav-item--active" : ""}`}
+          >
             My Repairs <span aria-hidden>→</span>
           </a>
           <div className="account__nav-divider" />
