@@ -101,3 +101,19 @@ export async function compareRepairs(ids: string[]): Promise<RepairListing[]> {
 
   return (result.data.items ?? []).map(mapListing);
 }
+
+/**
+ * The logged-in seller's own repair-service listings. Requires a bearer token.
+ */
+export async function getMyRepairListings(accessToken: string): Promise<RepairListing[]> {
+  const response = await fetch(ENDPOINTS.repairs.mine, {
+    headers: { Authorization: `Bearer ${accessToken}` },
+  });
+
+  const result = await response.json().catch(() => ({ message: "Could not load your listings" }));
+  if (!response.ok) {
+    throw new Error(result.message ?? "Could not load your listings");
+  }
+
+  return (result.data.items ?? []).map(mapListing);
+}

@@ -2,8 +2,11 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import { useRepairDetail } from "@/features/repairs/hooks/useRepairDetail";
-import { getAuthToken } from "@/lib/cookie";
+import { getValidAccessToken } from "@/lib/session";
+import { uploadRepairPhotos } from "@/features/uploads/api/uploadApi";
+import { savePendingIssue } from "@/features/bookings/pendingIssue";
 
 function initials(name: string): string {
   return name
@@ -26,11 +29,13 @@ interface ServiceDetailProps {
  * and review the full price breakdown before booking.
  */
 export default function ServiceDetail({ id }: ServiceDetailProps) {
+  const router = useRouter();
   const { repair, isLoading, error } = useRepairDetail(id);
   const [selectedOptionIndex, setSelectedOptionIndex] = useState(0);
   const [description, setDescription] = useState("");
   const [photos, setPhotos] = useState<string[]>([]);
-  const [bookingNotice, setBookingNotice] = useState<string | null>(null);
+  const [isUploading, setIsUploading] = useState(false);
+  const [uploadError, setUploadError] = useState<string | null>(null);
 
   if (isLoading) {
     return (
@@ -54,20 +59,38 @@ export default function ServiceDetail({ id }: ServiceDetailProps) {
   const serviceCost = selectedOption?.price ?? repair.priceRange.min;
   const total = serviceCost + PICKUP_FEE;
 
-  function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
+  async function handlePhotoSelect(e: React.ChangeEvent<HTMLInputElement>) {
     const files = Array.from(e.target.files ?? []);
-    const urls = files.map((file) => URL.createObjectURL(file));
-    setPhotos((prev) => [...prev, ...urls]);
-  }
+    if (files.length === 0) return;
 
-  async function handleBookNow() {
-    const token = await getAuthToken();
+    const token = await getValidAccessToken();
     if (!token) {
       window.location.href = `/login?next=/repairs/${id}`;
       return;
     }
-    setBookingNotice(
-      "Booking is launching in the next update — your selection has been noted. We'll follow up by email.",
+
+    setIsUploading(true);
+    setUploadError(null);
+    try {
+      const urls = await uploadRepairPhotos(token, files);
+      setPhotos((prev) => [...prev, ...urls]);
+    } catch (err) {
+      setUploadError(err instanceof Error ? err.message : "Could not upload photos");
+    } finally {
+      setIsUploading(false);
+    }
+  }
+
+  async function handleBookNow() {
+    const token = await getValidAccessToken();
+    if (!token) {
+      window.location.href = `/login?next=/repairs/${id}`;
+      return;
+    }
+    const option = repair!.repairOptions[selectedOptionIndex];
+    savePendingIssue(id, { description, photoUrls: photos });
+    router.push(
+      `/repairs/${id}/book?option=${encodeURIComponent(option.name)}&price=${option.price}`,
     );
   }
 
@@ -155,17 +178,24 @@ export default function ServiceDetail({ id }: ServiceDetailProps) {
             <label className="service-detail__upload-box">
               <span className="service-detail__upload-icon" aria-hidden />
               <span className="service-detail__upload-text">
-                Drag and drop photos here, or click to browse
+                {isUploading ? "Uploading…" : "Drag and drop photos here, or click to browse"}
               </span>
               <span className="service-detail__upload-hint">PNG, JPG up to 10MB each</span>
               <input
                 type="file"
                 accept="image/png,image/jpeg"
                 multiple
+                disabled={isUploading}
                 onChange={handlePhotoSelect}
                 style={{ display: "none" }}
               />
             </label>
+
+            {uploadError && (
+              <div className="fp__error" role="alert">
+                {uploadError}
+              </div>
+            )}
 
             {photos.length > 0 && (
               // eslint-disable-next-line @next/next/no-img-element
@@ -222,12 +252,6 @@ export default function ServiceDetail({ id }: ServiceDetailProps) {
               <span className="service-detail__total-value">${total.toFixed(2)}</span>
             </div>
           </div>
-
-          {bookingNotice && (
-            <div className="fp__success" role="status">
-              {bookingNotice}
-            </div>
-          )}
 
           <div className="service-detail__btn-stack">
             <button type="button" className="service-detail__btn-primary" onClick={handleBookNow}>

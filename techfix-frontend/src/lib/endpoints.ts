@@ -22,8 +22,24 @@ export const ENDPOINTS = {
     search: `${API_BASE_URL}/repairs`,
     getById: (id: string) => `${API_BASE_URL}/repairs/${id}`,
     compare: (ids: string[]) => `${API_BASE_URL}/repairs/compare?ids=${ids.join(",")}`,
+    mine: `${API_BASE_URL}/repairs/mine`,
   },
   categories: {
     list: `${API_BASE_URL}/categories`,
+  },
+  estimates: {
+    create: `${API_BASE_URL}/estimates`,
+    getById: (id: string) => `${API_BASE_URL}/estimates/${id}`,
+  },
+  bookings: {
+    create: `${API_BASE_URL}/bookings`,
+    getById: (id: string) => `${API_BASE_URL}/bookings/${id}`,
+    mine: `${API_BASE_URL}/bookings/mine`,
+    incoming: `${API_BASE_URL}/bookings/incoming`,
+    updateStatus: (id: string) => `${API_BASE_URL}/bookings/${id}/status`,
+    statusHistory: (id: string) => `${API_BASE_URL}/bookings/${id}/status`,
+  },
+  uploads: {
+    repairPhotos: `${API_BASE_URL}/uploads/repair-photos`,
   },
 } as const;
