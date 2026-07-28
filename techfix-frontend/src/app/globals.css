@@ -474,6 +474,14 @@ body {
 .footer__link:hover {
   color: var(--color-action-secondary);
 }
+/* Planned destination, not yet a route — shown but not clickable. */
+.footer__link--pending {
+  color: var(--color-text-muted);
+  cursor: default;
+}
+.footer__link--pending:hover {
+  color: var(--color-text-muted);
+}
 
 /* ═════════════════════════════════════════════════════════════════════
    COMPONENT STYLES — Login
@@ -3722,6 +3730,17 @@ body {
 }
 .dash__card-view:hover {
   border-color: var(--color-border-focus);
+}
+.dash__card-view:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
+/* Second click of the two-step delete confirm. */
+.dash__card-view--danger {
+  background: #b3261e;
+  border-color: #b3261e;
+  color: #fff;
 }
 
 .dash__card--inactive {

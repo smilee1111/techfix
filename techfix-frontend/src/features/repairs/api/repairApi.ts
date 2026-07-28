@@ -190,3 +190,24 @@ export async function setRepairListingActive(
   const result = await parseOrThrow(response, "Could not update listing status");
   return mapListing(result.data.repairService);
 }
+
+/**
+ * Grants or revokes a listing's verified badge. Admin only — the backend
+ * rejects this for the seller who owns the listing.
+ */
+export async function setRepairListingVerified(
+  accessToken: string,
+  id: string,
+  isVerified: boolean,
+): Promise<RepairListing> {
+  const response = await fetch(ENDPOINTS.repairs.setVerified(id), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ isVerified }),
+  });
+  const result = await parseOrThrow(response, "Could not update listing verification");
+  return mapListing(result.data.repairService);
+}
