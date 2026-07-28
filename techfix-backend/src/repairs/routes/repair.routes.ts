@@ -2,7 +2,13 @@ import { Router } from "express";
 import { RepairController } from "../controllers/repair.controller";
 import { authenticate, authorize } from "../../middlewares/auth.middleware";
 import { validate } from "../../middlewares/validate.middleware";
-import { searchRepairsDto, compareRepairsDto, createRepairServiceDto } from "../dtos/repair.dto";
+import {
+  searchRepairsDto,
+  compareRepairsDto,
+  createRepairServiceDto,
+  updateRepairServiceDto,
+  setRepairServiceActiveDto,
+} from "../dtos/repair.dto";
 import { UserRole } from "../../config/constants";
 
 const router = Router();
@@ -34,6 +40,25 @@ router.post(
   authorize(UserRole.SELLER, UserRole.ADMIN),
   validate(createRepairServiceDto),
   repairController.create
+);
+
+// PATCH /api/repairs/:id — owning seller (or admin) edits a listing
+router.patch(
+  "/:id",
+  authenticate,
+  authorize(UserRole.SELLER, UserRole.ADMIN),
+  validate(updateRepairServiceDto),
+  repairController.update
+);
+
+// PATCH /api/repairs/:id/active — soft delete / restore. Listings are never
+// hard-deleted, so bookings referencing them keep resolving.
+router.patch(
+  "/:id/active",
+  authenticate,
+  authorize(UserRole.SELLER, UserRole.ADMIN),
+  validate(setRepairServiceActiveDto),
+  repairController.setActive
 );
 
 // GET /api/repairs/:id
