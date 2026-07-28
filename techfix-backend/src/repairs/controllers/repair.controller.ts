@@ -109,6 +109,27 @@ export class RepairController {
     }
   };
 
+  setVerified = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { isVerified } = req.body as { isVerified: boolean };
+      const result = await this.repairService.setVerified(
+        req.params.id as string,
+        isVerified
+      );
+      res.status(200).json({
+        success: true,
+        message: isVerified ? "Listing verified" : "Listing verification removed",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
   setActive = async (
     req: AuthenticatedRequest,
     res: Response,

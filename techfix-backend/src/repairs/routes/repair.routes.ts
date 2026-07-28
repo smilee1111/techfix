@@ -8,6 +8,7 @@ import {
   createRepairServiceDto,
   updateRepairServiceDto,
   setRepairServiceActiveDto,
+  setRepairServiceVerifiedDto,
 } from "../dtos/repair.dto";
 import { UserRole } from "../../config/constants";
 
@@ -59,6 +60,15 @@ router.patch(
   authorize(UserRole.SELLER, UserRole.ADMIN),
   validate(setRepairServiceActiveDto),
   repairController.setActive
+);
+
+// PATCH /api/repairs/:id/verify — admin only; sellers cannot verify themselves
+router.patch(
+  "/:id/verify",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  validate(setRepairServiceVerifiedDto),
+  repairController.setVerified
 );
 
 // GET /api/repairs/:id

@@ -146,6 +146,24 @@ export class RepairService {
     return { repairService };
   }
 
+  /**
+   * Admin-only: grants or revokes a listing's verified badge. Deliberately
+   * does not reuse findOwned — an admin is never the owner, and a seller
+   * must not be able to verify their own listing.
+   */
+  async setVerified(id: string, isVerified: boolean) {
+    const existing = await this.repairRepository.findByIdIncludingInactive(id);
+    if (!existing) {
+      throw new NotFoundError("Repair service");
+    }
+
+    const repairService = await this.repairRepository.updateById(id, {
+      isVerified,
+    } as Partial<IRepairServiceDocument>);
+
+    return { repairService };
+  }
+
   /** Soft delete / restore — bookings referencing this listing stay resolvable. */
   async setActive(providerId: string, isAdmin: boolean, id: string, isActive: boolean) {
     await this.findOwned(id, providerId, isAdmin);

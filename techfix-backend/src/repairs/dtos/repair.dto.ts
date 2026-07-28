@@ -124,3 +124,12 @@ export const setRepairServiceActiveDto = z.object({
 });
 
 export type SetRepairServiceActiveDto = z.infer<typeof setRepairServiceActiveDto>;
+
+// ─── Admin: Verify Listing DTO ───────────────────────────────────
+// The verified badge is a trust signal, so it is admin-granted only —
+// never settable by the seller who owns the listing.
+export const setRepairServiceVerifiedDto = z.object({
+  isVerified: z.boolean(),
+});
+
+export type SetRepairServiceVerifiedDto = z.infer<typeof setRepairServiceVerifiedDto>;
