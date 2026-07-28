@@ -1,6 +1,7 @@
 "use client";
 
 import { useState } from "react";
+import Link from "next/link";
 import { useIncomingBookings } from "@/features/bookings/hooks/useIncomingBookings";
 import { useMyListings } from "@/features/repairs/hooks/useMyListings";
 import { REPAIR_STAGES, type RepairStage } from "@/features/bookings/types/booking.types";
@@ -115,6 +116,16 @@ export default function SellerDashboard() {
                     </option>
                   ))}
                 </select>
+                {/* A discrete link rather than a clickable row: this card
+                    already owns a <select>, and an interactive control
+                    can't live inside a link. */}
+                <Link
+                  href={`/bookings/${booking.id}`}
+                  className="dash__card-view"
+                  aria-label={`View full details for ${booking.referenceId}`}
+                >
+                  View
+                </Link>
               </div>
             ))
           )}
