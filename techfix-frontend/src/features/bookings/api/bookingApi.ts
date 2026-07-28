@@ -2,6 +2,7 @@ import { ENDPOINTS } from "@/lib/endpoints";
 import type {
   BookingRequest,
   BookingResult,
+  BookingDetail,
   BookingListItem,
   StatusLogEntry,
 } from "@/features/bookings/types/booking.types";
@@ -39,6 +40,22 @@ function mapListItem(raw: any): BookingListItem {
     currentStage: raw.currentStage,
     estimatedPickupDate: raw.estimatedPickupDate,
     createdAt: raw.createdAt,
+  };
+}
+
+function mapBookingDetail(raw: any): BookingDetail {
+  return {
+    ...mapBooking(raw),
+    repairServiceTitle: raw.repairService?.title ?? "Repair Service",
+    bookingType: raw.bookingType,
+    pickupAddress: raw.pickupAddress,
+    contactName: raw.contactName,
+    contactPhone: raw.contactPhone,
+    contactEmail: raw.contactEmail,
+    issueDescription: raw.issueDescription,
+    issuePhotos: raw.issuePhotos ?? [],
+    paymentMethod: raw.paymentMethod,
+    createdAt: raw.createdAt ?? raw.dateBooked,
   };
 }
 
@@ -80,14 +97,16 @@ export async function createBooking(
 }
 
 /**
- * Fetches a booking by id (used by the success page). Requires a bearer token.
+ * Fetches a booking by id — powers both the success page and the
+ * booking detail / timeline page. Requires a bearer token; the backend
+ * only serves it to the customer, the owning seller, or an admin.
  */
-export async function getBookingById(accessToken: string, id: string): Promise<BookingResult> {
+export async function getBookingById(accessToken: string, id: string): Promise<BookingDetail> {
   const response = await fetch(ENDPOINTS.bookings.getById(id), {
     headers: { Authorization: `Bearer ${accessToken}` },
   });
   const result = await parseOrThrow(response, "Could not load booking");
-  return mapBooking(result.data.booking);
+  return mapBookingDetail(result.data.booking);
 }
 
 /**
