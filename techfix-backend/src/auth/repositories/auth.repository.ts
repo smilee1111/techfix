@@ -1,5 +1,6 @@
 import User, { IUserDocument } from "../models/user.model";
 import { IAddress } from "../types/user.type";
+import { UserRoleType } from "../../config/constants";
 
 /**
  * Auth Repository
@@ -54,6 +55,15 @@ export class AuthRepository {
   }): Promise<IUserDocument> {
     const user = new User(data);
     return user.save();
+  }
+
+  /**
+   * List users, optionally narrowed to a single role — powers the admin
+   * panel's seller-verification queue.
+   */
+  async findAllByRole(role?: UserRoleType): Promise<IUserDocument[]> {
+    const query = role ? User.find({ role }) : User.find();
+    return query.sort({ createdAt: -1 }).exec();
   }
 
   /**

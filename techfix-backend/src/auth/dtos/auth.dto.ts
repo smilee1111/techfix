@@ -112,3 +112,17 @@ export const addAddressDto = z.object({
 });
 
 export type AddAddressDto = z.infer<typeof addAddressDto>;
+
+// ─── Admin: List Users Query DTO ────────────────────────────────
+export const listUsersDto = z.object({
+  role: z.enum(Object.values(UserRole) as [string, ...string[]]).optional(),
+});
+
+export type ListUsersDto = z.infer<typeof listUsersDto>;
+
+// ─── Admin: Set Seller Verified DTO ─────────────────────────────
+export const setSellerVerifiedDto = z.object({
+  isVerifiedSeller: z.boolean(),
+});
+
+export type SetSellerVerifiedDto = z.infer<typeof setSellerVerifiedDto>;
