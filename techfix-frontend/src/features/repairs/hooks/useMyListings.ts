@@ -1,6 +1,6 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState, useEffect, useCallback } from "react";
 import { getMyRepairListings } from "@/features/repairs/api/repairApi";
 import { getValidAccessToken } from "@/lib/session";
 import type { RepairListing } from "@/features/repairs/types/repair.types";
@@ -9,6 +9,7 @@ interface UseMyListingsReturn {
   items: RepairListing[];
   isLoading: boolean;
   error: string | null;
+  refetch: () => void;
 }
 
 /**
@@ -19,6 +20,7 @@ export function useMyListings(): UseMyListingsReturn {
   const [items, setItems] = useState<RepairListing[]>([]);
   const [isLoading, setIsLoading] = useState(true);
   const [error, setError] = useState<string | null>(null);
+  const [refreshKey, setRefreshKey] = useState(0);
 
   useEffect(() => {
     let cancelled = false;
@@ -43,7 +45,9 @@ export function useMyListings(): UseMyListingsReturn {
     return () => {
       cancelled = true;
     };
-  }, []);
+  }, [refreshKey]);
 
-  return { items, isLoading, error };
+  const refetch = useCallback(() => setRefreshKey((k) => k + 1), []);
+
+  return { items, isLoading, error, refetch };
 }

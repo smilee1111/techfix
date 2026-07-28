@@ -1,6 +1,7 @@
 import { ENDPOINTS } from "@/lib/endpoints";
 import type {
   RepairListing,
+  RepairListingInput,
   RepairSearchFilters,
   RepairSearchResult,
 } from "@/features/repairs/types/repair.types";
@@ -34,6 +35,9 @@ function mapListing(raw: any): RepairListing {
     totalReviews: raw.totalReviews ?? 0,
     serviceOptions: raw.serviceOptions ?? [],
     isVerified: !!raw.isVerified,
+    // Public search only returns active listings, so a missing flag means
+    // active; the seller dashboard receives the real value.
+    isActive: raw.isActive !== false,
     distanceKm:
       typeof raw.distanceMeters === "number" ? raw.distanceMeters / 1000 : undefined,
   };
@@ -116,4 +120,73 @@ export async function getMyRepairListings(accessToken: string): Promise<RepairLi
   }
 
   return (result.data.items ?? []).map(mapListing);
+}
+
+async function parseOrThrow(response: Response, fallback: string) {
+  const result = await response.json().catch(() => ({ message: fallback }));
+  if (!response.ok) {
+    throw new Error(result.message ?? fallback);
+  }
+  return result;
+}
+
+/**
+ * Creates a repair-service listing owned by the logged-in seller.
+ */
+export async function createRepairListing(
+  accessToken: string,
+  input: RepairListingInput,
+): Promise<RepairListing> {
+  const response = await fetch(ENDPOINTS.repairs.create, {
+    method: "POST",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(input),
+  });
+  const result = await parseOrThrow(response, "Could not create listing");
+  return mapListing(result.data.repairService);
+}
+
+/**
+ * Edits an existing listing. The backend rejects this unless the caller
+ * owns the listing (or is an admin).
+ */
+export async function updateRepairListing(
+  accessToken: string,
+  id: string,
+  input: Partial<RepairListingInput>,
+): Promise<RepairListing> {
+  const response = await fetch(ENDPOINTS.repairs.update(id), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify(input),
+  });
+  const result = await parseOrThrow(response, "Could not update listing");
+  return mapListing(result.data.repairService);
+}
+
+/**
+ * Soft-deletes or restores a listing. Listings are never hard-deleted so
+ * that past bookings keep resolving their repairService reference.
+ */
+export async function setRepairListingActive(
+  accessToken: string,
+  id: string,
+  isActive: boolean,
+): Promise<RepairListing> {
+  const response = await fetch(ENDPOINTS.repairs.setActive(id), {
+    method: "PATCH",
+    headers: {
+      "Content-Type": "application/json",
+      Authorization: `Bearer ${accessToken}`,
+    },
+    body: JSON.stringify({ isActive }),
+  });
+  const result = await parseOrThrow(response, "Could not update listing status");
+  return mapListing(result.data.repairService);
 }
