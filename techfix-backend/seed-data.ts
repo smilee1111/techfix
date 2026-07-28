@@ -298,7 +298,13 @@ async function importData() {
     optionName: "Screen Replacement",
     price: 95,
     bookingType: BookingType.PICKUP,
-    history: [RepairStage.RECEIVED, RepairStage.DIAGNOSING, RepairStage.REPAIRING],
+    // Parked mid-journey on a waiting state, so the timeline demo shows an
+    // in-progress repair that isn't simply "being worked on right now".
+    history: [
+      RepairStage.RECEIVED,
+      RepairStage.DIAGNOSING,
+      RepairStage.AWAITING_PARTS,
+    ],
     updatedBy: screenSavvy._id,
   });
 
@@ -307,10 +313,13 @@ async function importData() {
     optionName: "Battery Replacement",
     price: 59,
     bookingType: BookingType.DROPOFF,
+    // Walks every stage, so the completed timeline renders full-length.
     history: [
       RepairStage.RECEIVED,
       RepairStage.DIAGNOSING,
+      RepairStage.AWAITING_PARTS,
       RepairStage.REPAIRING,
+      RepairStage.QUALITY_CHECK,
       RepairStage.READY_FOR_PICKUP,
       RepairStage.DELIVERED,
     ],
