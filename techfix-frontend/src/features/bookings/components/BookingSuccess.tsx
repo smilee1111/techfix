@@ -82,9 +82,7 @@ export default function BookingSuccess({ id }: BookingSuccessProps) {
         </div>
 
         <div className="booking-success__actions">
-          {/* Repair tracking (Track Progress) isn't built until a later sprint —
-              point at the account page for now rather than a dead link. */}
-          <Link href="/account" className="booking-success__btn-primary">
+          <Link href={`/bookings/${booking.id}`} className="booking-success__btn-primary">
             Track My Repair
           </Link>
           <Link href="/dashboard" className="booking-success__btn-secondary">
