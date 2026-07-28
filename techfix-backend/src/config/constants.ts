@@ -25,6 +25,18 @@ export const AuthenticityLabel = {
 export type AuthenticityLabelType =
   (typeof AuthenticityLabel)[keyof typeof AuthenticityLabel];
 
+// ─── Product Condition ───────────────────────────────────────────
+// Distinct from AuthenticityLabel: condition describes physical wear,
+// the label describes provenance. A part can be genuine but used, or
+// third-party but new.
+export const ProductCondition = {
+  NEW: "new",
+  REFURBISHED: "refurbished",
+  USED: "used",
+} as const;
+export type ProductConditionType =
+  (typeof ProductCondition)[keyof typeof ProductCondition];
+
 // ─── Booking Status ──────────────────────────────────────────────
 export const BookingStatus = {
   PENDING: "pending",
