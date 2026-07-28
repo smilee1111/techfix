@@ -3,10 +3,11 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search } from "lucide-react";
+import { Search, ShoppingCart } from "lucide-react";
 import { getValidAccessToken } from "@/lib/session";
 import { getUserData } from "@/lib/cookie";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useCart } from "@/features/cart/CartProvider";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
 interface NavLink {
@@ -25,11 +26,11 @@ interface NavbarProps {
 }
 
 /* ─── Data ───────────────────────────────────────────────────────── */
-// Only routes that actually exist. "Buy Products", "Track" and "Help" were
-// scaffolded here ahead of their features and pointed at 404s; they come
-// back when the product and support pages ship.
+// Only routes that actually exist. "Track" and "Help" are still absent —
+// they arrive with the support pages.
 const NAV_LINKS: NavLink[] = [
   { label: "Repairs", href: "/repairs" },
+  { label: "Buy Products", href: "/products" },
   { label: "Estimate", href: "/estimate" },
 ];
 
@@ -51,6 +52,8 @@ const ROLE_LINKS: Record<string, NavLink> = {
 export default function Navbar({ variant: forcedVariant }: NavbarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
+  const { totals, isReady } = useCart();
+  const itemCount = totals.itemCount;
   const [detectedVariant, setDetectedVariant] = useState<"loggedOut" | "loggedIn">("loggedOut");
   const [role, setRole] = useState<string | null>(null);
 
@@ -122,9 +125,21 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
             </span>
           </div>
 
-          {/* The cart icon lived here with a hardcoded badge of "2" and a
-              link to /cart, which does not exist. It returns with the
-              product side, backed by real cart state. */}
+          {/* Badge count comes from real cart state. It renders only once
+              the stored cart has been read, so the number never flashes a
+              wrong value during hydration. */}
+          <Link
+            href="/cart"
+            className="navbar__cart"
+            aria-label={
+              itemCount > 0 ? `Shopping cart with ${itemCount} items` : "Shopping cart"
+            }
+          >
+            <ShoppingCart size={16} />
+            {isReady && itemCount > 0 && (
+              <span className="navbar__cart-badge">{itemCount}</span>
+            )}
+          </Link>
 
           {variant === "loggedOut" ? (
             <>

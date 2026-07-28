@@ -94,6 +94,11 @@ export type ServiceOptionType =
   (typeof ServiceOption)[keyof typeof ServiceOption];
 
 // ─── Order Status ────────────────────────────────────────────────
+// Doubles as the fulfilment timeline: the first five, in declaration order,
+// ARE the tracking ladder, and the order-detail UI derives
+// done/current/upcoming from each one's index. CANCELLED sits outside the
+// ladder as a terminal state. Never reorder without checking ORDER_STAGES
+// on the frontend.
 export const OrderStatus = {
   PLACED: "placed",
   CONFIRMED: "confirmed",
@@ -103,6 +108,15 @@ export const OrderStatus = {
   CANCELLED: "cancelled",
 } as const;
 export type OrderStatusType = (typeof OrderStatus)[keyof typeof OrderStatus];
+
+/** The ladder only — excludes CANCELLED, which is not a step forward. */
+export const ORDER_TIMELINE_STAGES = [
+  OrderStatus.PLACED,
+  OrderStatus.CONFIRMED,
+  OrderStatus.PROCESSING,
+  OrderStatus.SHIPPED,
+  OrderStatus.DELIVERED,
+] as const;
 
 // ─── Payment Method ──────────────────────────────────────────────
 export const PaymentMethod = {

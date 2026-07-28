@@ -20,9 +20,9 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "PRODUCTS",
     links: [
-      { label: "Certified Devices" },
-      { label: "Spare Parts" },
-      { label: "Bulk Orders" },
+      { label: "Browse Products", href: "/products" },
+      { label: "Compare Sellers", href: "/products" },
+      { label: "Cart", href: "/cart" },
     ],
   },
   {
