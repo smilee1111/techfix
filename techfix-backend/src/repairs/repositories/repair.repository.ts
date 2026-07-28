@@ -22,6 +22,24 @@ export class RepairRepository {
       .exec();
   }
 
+  /**
+   * Looks up a listing regardless of isActive — used for owner-facing
+   * reads and writes, where a seller must still be able to fetch and
+   * re-activate a listing they previously deactivated.
+   */
+  async findByIdIncludingInactive(id: string): Promise<IRepairServiceDocument | null> {
+    return RepairService.findById(id).populate("category", CATEGORY_FIELDS).exec();
+  }
+
+  async updateById(
+    id: string,
+    data: Partial<IRepairServiceDocument>
+  ): Promise<IRepairServiceDocument | null> {
+    return RepairService.findByIdAndUpdate(id, data, { returnDocument: "after" })
+      .populate("category", CATEGORY_FIELDS)
+      .exec();
+  }
+
   async findByIds(ids: string[]): Promise<IRepairServiceDocument[]> {
     return RepairService.find({ _id: { $in: ids }, isActive: true })
       .populate("provider", PROVIDER_FIELDS)
