@@ -95,11 +95,26 @@ export class BookingService {
     return { booking };
   }
 
-  async getById(id: string) {
+  /**
+   * A booking is private: only the customer who placed it, the seller who
+   * owns the underlying listing, or an admin may read it. Ownership is
+   * derived from the stored document, never trusted from the request.
+   */
+  private assertCanView(booking: IBookingDocument, requesterId: string, isAdmin: boolean) {
+    if (isAdmin) return;
+    const isCustomer = booking.user.toString() === requesterId;
+    const isOwner = ownerIdOf(booking as unknown as PopulatedProvider) === requesterId;
+    if (!isCustomer && !isOwner) {
+      throw new ForbiddenError("You do not have access to this booking");
+    }
+  }
+
+  async getById(requesterId: string, isAdmin: boolean, id: string) {
     const booking = await this.bookingRepository.findById(id);
     if (!booking) {
       throw new NotFoundError("Booking");
     }
+    this.assertCanView(booking, requesterId, isAdmin);
     return { booking };
   }
 
@@ -160,11 +175,7 @@ export class BookingService {
       throw new NotFoundError("Booking");
     }
 
-    const isCustomer = booking.user.toString() === requesterId;
-    const isOwner = ownerIdOf(booking as unknown as PopulatedProvider) === requesterId;
-    if (!isAdmin && !isCustomer && !isOwner) {
-      throw new ForbiddenError("You do not have access to this booking's history");
-    }
+    this.assertCanView(booking, requesterId, isAdmin);
 
     const logs = await this.bookingRepository.findStatusLogsByBooking(bookingId);
     return { logs };

@@ -38,7 +38,12 @@ export class BookingController {
     next: NextFunction
   ): Promise<void> => {
     try {
-      const result = await this.bookingService.getById(req.params.id as string);
+      const isAdmin = req.user!.role === UserRole.ADMIN;
+      const result = await this.bookingService.getById(
+        req.user!.userId,
+        isAdmin,
+        req.params.id as string
+      );
       res.status(200).json({ success: true, data: result });
     } catch (error) {
       next(error);

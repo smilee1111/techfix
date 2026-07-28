@@ -54,9 +54,32 @@ export interface BookingListItem {
   createdAt: string;
 }
 
+/**
+ * Everything the booking detail / timeline page shows. Extends BookingResult
+ * so the success page keeps working off the same fetch.
+ */
+export interface BookingDetail extends BookingResult {
+  repairServiceTitle: string;
+  bookingType: BookingType;
+  pickupAddress?: string;
+  contactName: string;
+  contactPhone: string;
+  contactEmail: string;
+  issueDescription?: string;
+  issuePhotos: string[];
+  paymentMethod: BookingPaymentMethod;
+  createdAt: string;
+}
+
 export interface StatusLogEntry {
   stage: RepairStage;
   note?: string;
   updatedByName: string;
   timestamp: string;
 }
+
+export const PAYMENT_METHOD_LABELS: Record<BookingPaymentMethod, string> = {
+  card: "Card",
+  digital_wallet: "Digital Wallet",
+  pay_at_pickup: "Pay at Pickup",
+};
