@@ -23,9 +23,13 @@ export const ENDPOINTS = {
     getById: (id: string) => `${API_BASE_URL}/repairs/${id}`,
     compare: (ids: string[]) => `${API_BASE_URL}/repairs/compare?ids=${ids.join(",")}`,
     mine: `${API_BASE_URL}/repairs/mine`,
+    create: `${API_BASE_URL}/repairs`,
+    update: (id: string) => `${API_BASE_URL}/repairs/${id}`,
+    setActive: (id: string) => `${API_BASE_URL}/repairs/${id}/active`,
   },
   categories: {
     list: `${API_BASE_URL}/categories`,
+    byType: (type: "repair" | "product") => `${API_BASE_URL}/categories?type=${type}`,
   },
   estimates: {
     create: `${API_BASE_URL}/estimates`,
