@@ -1,6 +1,7 @@
 import { Request, Response, NextFunction } from "express";
 import { AuthService } from "../services/auth.service";
 import { AuthenticatedRequest } from "../types/user.type";
+import { UserRoleType } from "../../config/constants";
 
 /**
  * Auth Controller
@@ -289,6 +290,44 @@ export class AuthController {
       res.status(200).json({
         success: true,
         message: "Address removed successfully",
+        data: result,
+      });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  // ─── Admin ────────────────────────────────────────────────────
+
+  listUsers = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { role } = req.query as { role?: UserRoleType };
+      const result = await this.authService.listUsers(role);
+      res.status(200).json({ success: true, data: result });
+    } catch (error) {
+      next(error);
+    }
+  };
+
+  setSellerVerified = async (
+    req: AuthenticatedRequest,
+    res: Response,
+    next: NextFunction
+  ): Promise<void> => {
+    try {
+      const { isVerifiedSeller } = req.body as { isVerifiedSeller: boolean };
+      const result = await this.authService.setSellerVerified(
+        req.params.id as string,
+        isVerifiedSeller
+      );
+
+      res.status(200).json({
+        success: true,
+        message: isVerifiedSeller ? "Seller verified" : "Seller verification removed",
         data: result,
       });
     } catch (error) {
