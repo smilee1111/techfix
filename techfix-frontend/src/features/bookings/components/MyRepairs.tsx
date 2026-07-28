@@ -1,5 +1,6 @@
 "use client";
 
+import Link from "next/link";
 import { useMyBookings } from "@/features/bookings/hooks/useMyBookings";
 import { REPAIR_STAGES } from "@/features/bookings/types/booking.types";
 
@@ -51,14 +52,20 @@ export default function MyRepairs() {
         ) : items.length === 0 ? (
           <p className="dash__empty">
             You haven&apos;t booked a repair yet — browse{" "}
-            <a href="/repairs" style={{ color: "var(--color-action-secondary)" }}>
+            <Link href="/repairs" style={{ color: "var(--color-action-secondary)" }}>
               repair shops
-            </a>{" "}
+            </Link>{" "}
             to get started.
           </p>
         ) : (
           items.map((booking) => (
-            <div className="dash__card" key={booking.id}>
+            // Whole row is the link target, so the common action (open the
+            // repair) is the largest possible hit area (Fitts's Law).
+            <Link
+              href={`/bookings/${booking.id}`}
+              key={booking.id}
+              className="dash__card dash__card--clickable"
+            >
               <div className="dash__card-avatar" aria-hidden>
                 {initials(booking.providerName)}
               </div>
@@ -74,7 +81,7 @@ export default function MyRepairs() {
               <span className={stageBadgeClass(booking.currentStage)}>
                 {stageLabel(booking.currentStage)}
               </span>
-            </div>
+            </Link>
           ))
         )}
       </div>
