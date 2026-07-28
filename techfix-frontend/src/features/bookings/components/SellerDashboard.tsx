@@ -4,6 +4,9 @@ import { useState } from "react";
 import Link from "next/link";
 import { useIncomingBookings } from "@/features/bookings/hooks/useIncomingBookings";
 import { useMyListings } from "@/features/repairs/hooks/useMyListings";
+import { useListingMutations } from "@/features/repairs/hooks/useListingMutations";
+import ListingForm from "@/features/repairs/components/ListingForm";
+import type { RepairListing } from "@/features/repairs/types/repair.types";
 import { REPAIR_STAGES, type RepairStage } from "@/features/bookings/types/booking.types";
 
 function initials(name: string): string {
@@ -35,7 +38,20 @@ function stageLabel(stage: string): string {
  */
 export default function SellerDashboard() {
   const [tab, setTab] = useState<"bookings" | "listings">("bookings");
-  const { items: listings, isLoading: listingsLoading, error: listingsError } = useMyListings();
+  // null = form closed; undefined listing = creating; a listing = editing.
+  const [formState, setFormState] = useState<{ listing?: RepairListing } | null>(null);
+  const {
+    items: listings,
+    isLoading: listingsLoading,
+    error: listingsError,
+    refetch: refetchListings,
+  } = useMyListings();
+  const { toggleActive, togglingId, error: mutationError } = useListingMutations();
+
+  async function handleToggleActive(listing: RepairListing) {
+    const ok = await toggleActive(listing.id, !listing.isActive);
+    if (ok) refetchListings();
+  }
   const {
     items: bookings,
     isLoading: bookingsLoading,
@@ -132,18 +148,37 @@ export default function SellerDashboard() {
         </div>
       ) : (
         <div className="dash__list">
-          {listingsError && (
+          {(listingsError || mutationError) && (
             <div className="fp__error" role="alert">
-              {listingsError}
+              {listingsError ?? mutationError}
             </div>
           )}
+
+          {formState ? (
+            <ListingForm
+              listing={formState.listing}
+              onCancel={() => setFormState(null)}
+              onSaved={() => {
+                setFormState(null);
+                refetchListings();
+              }}
+            />
+          ) : (
+            <button type="button" className="dash__new" onClick={() => setFormState({})}>
+              + New Listing
+            </button>
+          )}
+
           {listingsLoading ? (
             <p style={{ color: "var(--color-text-muted)" }}>Loading your listings…</p>
           ) : listings.length === 0 ? (
             <p className="dash__empty">You haven&apos;t listed any repair services yet.</p>
           ) : (
             listings.map((listing) => (
-              <div className="dash__card" key={listing.id}>
+              <div
+                className={`dash__card ${listing.isActive ? "" : "dash__card--inactive"}`}
+                key={listing.id}
+              >
                 <div className="dash__card-avatar" aria-hidden>
                   {initials(listing.deviceType)}
                 </div>
@@ -160,6 +195,27 @@ export default function SellerDashboard() {
                 <span className={listing.isVerified ? "dash__stage-badge dash__stage-badge--delivered" : "dash__stage-badge"}>
                   {listing.isVerified ? "Verified" : "Unverified"}
                 </span>
+                {!listing.isActive && <span className="dash__stage-badge">Hidden</span>}
+                <button
+                  type="button"
+                  className="dash__card-view"
+                  onClick={() => setFormState({ listing })}
+                >
+                  Edit
+                </button>
+                {/* Soft delete: hiding keeps past bookings resolvable. */}
+                <button
+                  type="button"
+                  className="dash__card-view"
+                  disabled={togglingId === listing.id}
+                  onClick={() => handleToggleActive(listing)}
+                >
+                  {togglingId === listing.id
+                    ? "…"
+                    : listing.isActive
+                      ? "Hide"
+                      : "Restore"}
+                </button>
               </div>
             ))
           )}

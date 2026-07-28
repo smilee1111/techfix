@@ -3724,6 +3724,225 @@ body {
   border-color: var(--color-border-focus);
 }
 
+.dash__card--inactive {
+  opacity: 0.55;
+  border-style: dashed;
+}
+
+.dash__new {
+  align-self: flex-start;
+  padding: 12px 20px;
+  border-radius: 10px;
+  border: 1px solid var(--color-primary);
+  background: var(--color-primary);
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-base);
+}
+.dash__new:hover {
+  background: var(--color-primary-hover);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   COMPONENT STYLES — Seller Listing Form (create / edit)
+   ═════════════════════════════════════════════════════════════════════ */
+
+.lform {
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 28px;
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+  animation: fadeIn var(--transition-base);
+}
+
+.lform__head {
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+
+.lform__title {
+  color: var(--color-text-primary);
+  font-size: 18px;
+  font-weight: 700;
+}
+
+.lform__subtitle,
+.lform__hint {
+  color: var(--color-text-muted);
+  font-size: 13px;
+}
+
+.lform__grid {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+}
+
+.lform__field {
+  flex: 1 1 220px;
+  display: flex;
+  flex-direction: column;
+  gap: 6px;
+}
+.lform__field--wide {
+  flex-basis: 100%;
+}
+
+.lform__label {
+  color: var(--color-text-secondary);
+  font-size: 13px;
+  font-weight: 600;
+}
+
+.lform__input {
+  padding: 11px 14px;
+  background: var(--color-bg-input);
+  border: 1px solid var(--color-border-input);
+  border-radius: 8px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  font-family: inherit;
+  width: 100%;
+  transition: border-color var(--transition-base);
+}
+.lform__input:focus {
+  outline: none;
+  border-color: var(--color-border-focus);
+}
+.lform__input:disabled {
+  opacity: 0.6;
+}
+
+.lform__textarea {
+  resize: vertical;
+  min-height: 84px;
+}
+
+.lform__fieldset {
+  border: 1px solid var(--color-border-separator);
+  border-radius: 10px;
+  padding: 18px;
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.lform__checks {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 18px;
+}
+
+.lform__check {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  color: var(--color-text-primary);
+  font-size: 14px;
+  cursor: pointer;
+}
+
+.lform__options {
+  display: flex;
+  flex-direction: column;
+  gap: 10px;
+}
+
+/* Name grows, price stays narrow, remove button is a fixed square. */
+.lform__option {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  align-items: center;
+}
+.lform__option .lform__input {
+  flex: 1 1 140px;
+  width: auto;
+}
+.lform__input--price {
+  flex: 0 1 110px;
+}
+
+.lform__remove {
+  flex-shrink: 0;
+  width: 38px;
+  height: 38px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface-elevated);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-family: inherit;
+  cursor: pointer;
+}
+.lform__remove:disabled {
+  opacity: 0.4;
+  cursor: not-allowed;
+}
+
+.lform__add {
+  align-self: flex-start;
+  background: none;
+  border: none;
+  color: var(--color-text-link);
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  padding: 0;
+}
+.lform__add:hover {
+  text-decoration: underline;
+}
+
+.lform__actions {
+  display: flex;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.lform__submit,
+.lform__cancel {
+  padding: 12px 24px;
+  border-radius: 10px;
+  font-size: 14px;
+  font-weight: 600;
+  font-family: inherit;
+  cursor: pointer;
+  transition: background var(--transition-base), border-color var(--transition-base);
+}
+
+.lform__submit {
+  background: var(--color-primary);
+  border: 1px solid var(--color-primary);
+  color: var(--color-text-primary);
+}
+.lform__submit:hover:not(:disabled) {
+  background: var(--color-primary-hover);
+}
+
+.lform__cancel {
+  background: transparent;
+  border: 1px solid var(--color-border-subtle);
+  color: var(--color-text-secondary);
+}
+.lform__cancel:hover:not(:disabled) {
+  border-color: var(--color-border-focus);
+}
+
+.lform__submit:disabled,
+.lform__cancel:disabled {
+  opacity: 0.6;
+  cursor: not-allowed;
+}
+
 /* ═════════════════════════════════════════════════════════════════════
    COMPONENT STYLES — Booking Detail + Repair Stage Timeline
    ═════════════════════════════════════════════════════════════════════ */
