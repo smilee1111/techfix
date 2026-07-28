@@ -66,6 +66,13 @@ export const ENDPOINTS = {
       `${API_BASE_URL}/reviews?targetType=${targetType}&target=${target}`,
     create: `${API_BASE_URL}/reviews`,
   },
+  orders: {
+    create: `${API_BASE_URL}/orders`,
+    getById: (id: string) => `${API_BASE_URL}/orders/${id}`,
+    mine: `${API_BASE_URL}/orders/mine`,
+    statusHistory: (id: string) => `${API_BASE_URL}/orders/${id}/status`,
+    updateStatus: (id: string) => `${API_BASE_URL}/orders/${id}/status`,
+  },
   uploads: {
     repairPhotos: `${API_BASE_URL}/uploads/repair-photos`,
   },
