@@ -55,11 +55,18 @@ export const BookingPaymentMethod = {
 export type BookingPaymentMethodType =
   (typeof BookingPaymentMethod)[keyof typeof BookingPaymentMethod];
 
-// ─── Repair Stages (5-stage timeline from Design_guide.md) ──────
+// ─── Repair Stages (7-stage timeline from the "Repair Timeline" Figma frame) ──
+// Declaration order IS the timeline order — the detail page renders these as a
+// ladder and derives done/current/upcoming from each stage's index, so never
+// reorder these without checking BookingDetail.tsx.
+// Supersedes the 5-stage list in Design_guide.md, which omitted the two waiting
+// states that matter most to a customer: parts on order, and post-repair QC.
 export const RepairStage = {
   RECEIVED: "received",
   DIAGNOSING: "diagnosing",
+  AWAITING_PARTS: "awaiting_parts",
   REPAIRING: "repairing",
+  QUALITY_CHECK: "quality_check",
   READY_FOR_PICKUP: "ready_for_pickup",
   DELIVERED: "delivered",
 } as const;
