@@ -5,11 +5,8 @@ import Image from "next/image";
 import { useCart, FREE_SHIPPING_THRESHOLD } from "@/features/cart/CartProvider";
 
 /**
- * Cart — feature UI only.
- *
- * Checkout is deliberately not wired up here: orders arrive in sprint 6,
- * and a button that appears to place an order but doesn't would be worse
- * than one that plainly says what it's waiting on.
+ * Cart — feature UI only. Hands off to /checkout, which converts these
+ * lines into a real order (the server re-prices every one of them).
  */
 export default function CartView() {
   const { items, totals, isReady, removeItem, setQuantity, clear } = useCart();
@@ -141,9 +138,9 @@ export default function CartView() {
               </p>
             )}
 
-            <button type="button" className="lform__submit cart__checkout" disabled>
-              Checkout — coming in the next release
-            </button>
+            <Link href="/checkout" className="lform__submit cart__checkout">
+              Proceed to Checkout
+            </Link>
           </div>
         </div>
       </div>

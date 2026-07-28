@@ -142,8 +142,10 @@ export default function AccountProfile() {
             My Repairs <span aria-hidden>→</span>
           </Link>
           <div className="account__nav-divider" />
-          {/* Order History intentionally omitted until the product side ships
-              — it linked to /orders, which does not exist. */}
+          <Link href="/orders" className="account__nav-item">
+            Order History <span aria-hidden>→</span>
+          </Link>
+          <div className="account__nav-divider" />
           <span className="account__nav-item account__nav-item--muted">Saved Addresses</span>
           <div className="account__nav-divider" />
           <span className="account__nav-item account__nav-item--muted">Payment Methods</span>

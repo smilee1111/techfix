@@ -2,7 +2,7 @@
 
 import { useState, useEffect } from "react";
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { Search, ShoppingCart } from "lucide-react";
 import { getValidAccessToken } from "@/lib/session";
 import { getUserData } from "@/lib/cookie";
@@ -26,15 +26,17 @@ interface NavbarProps {
 }
 
 /* ─── Data ───────────────────────────────────────────────────────── */
-// Only routes that actually exist. "Track" and "Help" are still absent —
-// they arrive with the support pages.
 const NAV_LINKS: NavLink[] = [
   { label: "Repairs", href: "/repairs" },
   { label: "Buy Products", href: "/products" },
   { label: "Estimate", href: "/estimate" },
+  { label: "Help", href: "/help" },
 ];
 
-const LOGGED_IN_LINKS: NavLink[] = [{ label: "My Repairs", href: "/my-repairs" }];
+const LOGGED_IN_LINKS: NavLink[] = [
+  { label: "My Repairs", href: "/my-repairs" },
+  { label: "Orders", href: "/orders" },
+];
 
 /** Extra destinations a role unlocks. */
 const ROLE_LINKS: Record<string, NavLink> = {
@@ -51,9 +53,11 @@ const ROLE_LINKS: Record<string, NavLink> = {
  */
 export default function Navbar({ variant: forcedVariant }: NavbarProps) {
   const pathname = usePathname();
+  const router = useRouter();
   const { logout } = useAuth();
   const { totals, isReady } = useCart();
   const itemCount = totals.itemCount;
+  const [searchTerm, setSearchTerm] = useState("");
   const [detectedVariant, setDetectedVariant] = useState<"loggedOut" | "loggedIn">("loggedOut");
   const [role, setRole] = useState<string | null>(null);
 
@@ -117,13 +121,26 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
 
         {/* ── Right: Search + Actions ── */}
         <div className="navbar__right">
-          {/* Search bar */}
-          <div className="navbar__search">
+          {/* Was a decorative div with placeholder text; now a real form
+              that routes into global search across both marketplace halves. */}
+          <form
+            className="navbar__search"
+            role="search"
+            onSubmit={(e) => {
+              e.preventDefault();
+              const trimmed = searchTerm.trim();
+              if (trimmed) router.push(`/search?q=${encodeURIComponent(trimmed)}`);
+            }}
+          >
             <Search size={14} className="navbar__search-icon" aria-hidden />
-            <span className="navbar__search-placeholder">
-              Search devices, services...
-            </span>
-          </div>
+            <input
+              className="navbar__search-input"
+              value={searchTerm}
+              onChange={(e) => setSearchTerm(e.target.value)}
+              placeholder="Search devices, services..."
+              aria-label="Search TechFix"
+            />
+          </form>
 
           {/* Badge count comes from real cart state. It renders only once
               the stored cart has been read, so the number never flashes a
