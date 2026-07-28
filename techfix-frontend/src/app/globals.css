@@ -3691,3 +3691,290 @@ body {
   padding: 40px 0;
   text-align: center;
 }
+
+/* Makes a whole list row a link target without changing its look —
+   the entire card becomes the hit area (Fitts's Law). */
+.dash__card-link {
+  display: contents;
+  color: inherit;
+  text-decoration: none;
+}
+
+.dash__card--clickable {
+  cursor: pointer;
+  transition: border-color var(--transition-base), transform var(--transition-base);
+}
+.dash__card--clickable:hover {
+  border-color: var(--color-border-focus);
+  transform: translateY(-1px);
+}
+
+.dash__card-view {
+  padding: 8px 16px;
+  border-radius: 8px;
+  border: 1px solid var(--color-border-subtle);
+  background: var(--color-bg-surface-elevated);
+  color: var(--color-text-primary);
+  font-size: 13px;
+  font-weight: 600;
+  text-decoration: none;
+  white-space: nowrap;
+}
+.dash__card-view:hover {
+  border-color: var(--color-border-focus);
+}
+
+/* ═════════════════════════════════════════════════════════════════════
+   COMPONENT STYLES — Booking Detail + Repair Stage Timeline
+   ═════════════════════════════════════════════════════════════════════ */
+
+.bdetail {
+  align-self: stretch;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+  padding: 48px 96px 80px;
+  animation: fadeIn var(--transition-slow);
+}
+
+.bdetail__back {
+  color: var(--color-text-link);
+  font-size: 14px;
+  font-weight: 600;
+  text-decoration: none;
+  width: fit-content;
+}
+.bdetail__back:hover {
+  text-decoration: underline;
+}
+
+.bdetail__head {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 20px;
+  flex-wrap: wrap;
+}
+
+.bdetail__title {
+  color: var(--color-text-primary);
+  font-size: 28px;
+  font-weight: 700;
+}
+
+.bdetail__subtitle {
+  color: var(--color-text-muted);
+  font-size: 14px;
+  margin-top: 6px;
+}
+
+.bdetail__grid {
+  display: flex;
+  flex-wrap: wrap;
+  align-items: flex-start;
+  gap: 24px;
+}
+
+/* Timeline column grows twice as fast as the summary column, and both
+   fall to full width once there's no room — no media query needed. */
+.bdetail__grid > .bdetail__panel {
+  flex: 2 1 420px;
+}
+
+.bdetail__side {
+  flex: 1 1 320px;
+  display: flex;
+  flex-direction: column;
+  gap: 24px;
+}
+
+.bdetail__panel {
+  background: var(--color-bg-surface);
+  border: 1px solid var(--color-border-subtle);
+  border-radius: 14px;
+  padding: 24px;
+}
+
+.bdetail__panel-title {
+  color: var(--color-text-primary);
+  font-size: 16px;
+  font-weight: 700;
+  margin-bottom: 20px;
+}
+
+.bdetail__rows {
+  display: flex;
+  flex-direction: column;
+  gap: 12px;
+}
+
+.bdetail__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 16px;
+  font-size: 14px;
+}
+.bdetail__row dt {
+  color: var(--color-text-muted);
+  flex-shrink: 0;
+}
+.bdetail__row dd {
+  color: var(--color-text-primary);
+  text-align: right;
+}
+
+.bdetail__row--total {
+  border-top: 1px solid var(--color-border-separator);
+  padding-top: 12px;
+  margin-top: 4px;
+  font-weight: 700;
+}
+.bdetail__row--total dd {
+  color: var(--color-accent-neon);
+  font-size: 17px;
+}
+
+.bdetail__issue {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.bdetail__photos {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 10px;
+  margin-top: 16px;
+}
+
+.bdetail__photo {
+  display: block;
+  width: 96px;
+  height: 96px;
+  border-radius: 10px;
+  overflow: hidden;
+  border: 1px solid var(--color-border-subtle);
+}
+.bdetail__photo img {
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+}
+
+/* ── The stage ladder itself ──────────────────────────────────────── */
+
+.timeline {
+  display: flex;
+  flex-direction: column;
+  list-style: none;
+  padding: 0;
+  margin: 0;
+}
+
+.timeline__item {
+  position: relative;
+  display: flex;
+  gap: 16px;
+  padding-bottom: 28px;
+}
+.timeline__item:last-child {
+  padding-bottom: 0;
+}
+
+/* Connector between markers — drawn on every item but the last. */
+.timeline__item::before {
+  content: "";
+  position: absolute;
+  left: 13px;
+  top: 28px;
+  bottom: 0;
+  width: 2px;
+  background: var(--color-border-subtle);
+}
+.timeline__item:last-child::before {
+  display: none;
+}
+.timeline__item--done::before {
+  background: var(--color-primary);
+}
+
+.timeline__marker {
+  position: relative;
+  z-index: 1;
+  width: 28px;
+  height: 28px;
+  flex-shrink: 0;
+  border-radius: 50%;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 13px;
+  font-weight: 700;
+  background: var(--color-bg-surface);
+  border: 2px solid var(--color-border-subtle);
+  color: var(--color-text-primary);
+}
+
+.timeline__item--done .timeline__marker {
+  background: var(--color-primary);
+  border-color: var(--color-primary);
+}
+
+.timeline__item--current .timeline__marker {
+  background: var(--color-accent-neon);
+  border-color: var(--color-accent-neon);
+  box-shadow: 0 0 0 4px var(--color-primary-glow);
+}
+
+.timeline__item--upcoming .timeline__marker {
+  border-style: dashed;
+}
+
+.timeline__body {
+  display: flex;
+  flex-direction: column;
+  gap: 4px;
+  padding-top: 3px;
+  min-width: 0;
+  flex: 1;
+}
+
+.timeline__row {
+  display: flex;
+  align-items: baseline;
+  justify-content: space-between;
+  gap: 12px;
+  flex-wrap: wrap;
+}
+
+.timeline__label {
+  color: var(--color-text-primary);
+  font-size: 15px;
+  font-weight: 600;
+}
+.timeline__item--upcoming .timeline__label {
+  color: var(--color-text-muted);
+  font-weight: 500;
+}
+.timeline__item--current .timeline__label {
+  color: var(--color-accent-neon);
+}
+
+.timeline__time {
+  color: var(--color-text-muted);
+  font-size: 13px;
+  white-space: nowrap;
+}
+
+.timeline__note {
+  color: var(--color-text-secondary);
+  font-size: 14px;
+  line-height: 1.6;
+}
+
+.timeline__author,
+.timeline__pending {
+  color: var(--color-text-muted);
+  font-size: 12px;
+}
