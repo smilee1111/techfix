@@ -1,8 +1,10 @@
 "use client";
 
 import { useState, useEffect, type FormEvent } from "react";
+import Link from "next/link";
 import { useProfile } from "@/features/auth/hooks/useProfile";
 import { useAuth } from "@/features/auth/hooks/useAuth";
+import { useMyBookings } from "@/features/bookings/hooks/useMyBookings";
 
 function initials(name: string): string {
   return name
@@ -31,6 +33,10 @@ const ROLE_LABELS: Record<string, string> = {
 export default function AccountProfile() {
   const { profile, isLoading, error, updateProfile, isSaving } = useProfile();
   const { logout } = useAuth();
+  const { items: bookings, isLoading: bookingsLoading } = useMyBookings();
+
+  const totalRepairs = bookings.length;
+  const activeRepairs = bookings.filter((b) => b.currentStage !== "delivered").length;
 
   const [isEditing, setIsEditing] = useState(false);
   const [name, setName] = useState("");
@@ -93,18 +99,15 @@ export default function AccountProfile() {
         </button>
       </div>
 
-      {/* Stats */}
+      {/* Stats — derived from the customer's real bookings. The "Orders"
+          tile is deliberately absent until the product side ships. */}
       <div className="account__stats">
         <div className="account__stat">
-          <p className="account__stat-value">0</p>
+          <p className="account__stat-value">{bookingsLoading ? "—" : totalRepairs}</p>
           <p className="account__stat-label">Repairs</p>
         </div>
         <div className="account__stat">
-          <p className="account__stat-value">0</p>
-          <p className="account__stat-label">Orders</p>
-        </div>
-        <div className="account__stat">
-          <p className="account__stat-value">0</p>
+          <p className="account__stat-value">{bookingsLoading ? "—" : activeRepairs}</p>
           <p className="account__stat-label">Active</p>
         </div>
         <div className="account__stat">
@@ -118,21 +121,29 @@ export default function AccountProfile() {
         <nav className="account__sidebar" aria-label="Account navigation">
           {profile.role === "seller" && (
             <>
-              <a href="/seller/dashboard" className="account__nav-item account__nav-item--active">
+              <Link href="/seller/dashboard" className="account__nav-item account__nav-item--active">
                 Seller Dashboard <span aria-hidden>→</span>
-              </a>
+              </Link>
               <div className="account__nav-divider" />
             </>
           )}
-          <a
+          {profile.role === "admin" && (
+            <>
+              <Link href="/admin" className="account__nav-item account__nav-item--active">
+                Admin Panel <span aria-hidden>→</span>
+              </Link>
+              <div className="account__nav-divider" />
+            </>
+          )}
+          <Link
             href="/my-repairs"
-            className={`account__nav-item ${profile.role !== "seller" ? "account__nav-item--active" : ""}`}
+            className={`account__nav-item ${profile.role === "customer" ? "account__nav-item--active" : ""}`}
           >
             My Repairs <span aria-hidden>→</span>
-          </a>
+          </Link>
           <div className="account__nav-divider" />
-          <a href="/orders" className="account__nav-item">Order History</a>
-          <div className="account__nav-divider" />
+          {/* Order History intentionally omitted until the product side ships
+              — it linked to /orders, which does not exist. */}
           <span className="account__nav-item account__nav-item--muted">Saved Addresses</span>
           <div className="account__nav-divider" />
           <span className="account__nav-item account__nav-item--muted">Payment Methods</span>
