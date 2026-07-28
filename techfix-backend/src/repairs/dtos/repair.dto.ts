@@ -72,3 +72,55 @@ export const createRepairServiceDto = z.object({
 });
 
 export type CreateRepairServiceDto = z.infer<typeof createRepairServiceDto>;
+
+// ─── Update Repair Service DTO (provider-facing) ─────────────────
+// Every field is optional and — unlike the create DTO — none carry defaults,
+// so omitting a key leaves the stored value untouched rather than resetting
+// it to an empty array. `.refine` guards against an empty PATCH body.
+export const updateRepairServiceDto = z
+  .object({
+    category: z.string().min(1).optional(),
+    deviceType: z.string().min(1).optional(),
+    title: z.string().min(1).optional(),
+    description: z.string().min(1).optional(),
+    priceRange: z
+      .object({
+        min: z.number().min(0),
+        max: z.number().min(0),
+      })
+      .optional(),
+    repairOptions: z.array(repairOptionDto).optional(),
+    estimatedTime: z.string().optional(),
+    readyBy: z.string().optional(),
+    warranty: z.string().optional(),
+    images: z.array(z.string()).optional(),
+    location: z
+      .object({
+        address: z.string().min(1),
+        city: z.string().optional(),
+        coordinates: z
+          .object({
+            lat: z.number(),
+            lng: z.number(),
+          })
+          .optional(),
+      })
+      .optional(),
+    serviceOptions: z
+      .array(z.enum(Object.values(ServiceOption) as [string, ...string[]]))
+      .optional(),
+  })
+  .refine((data) => Object.keys(data).length > 0, {
+    message: "Provide at least one field to update",
+  });
+
+export type UpdateRepairServiceDto = z.infer<typeof updateRepairServiceDto>;
+
+// ─── Activate / Deactivate DTO ───────────────────────────────────
+// Listings are soft-deleted: a seller deactivates rather than destroys, so
+// existing bookings keep resolving their repairService reference.
+export const setRepairServiceActiveDto = z.object({
+  isActive: z.boolean(),
+});
+
+export type SetRepairServiceActiveDto = z.infer<typeof setRepairServiceActiveDto>;
