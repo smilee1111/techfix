@@ -1,0 +1,26 @@
+[
+  {
+    "n": 70,
+    "folder": "12-empty-states",
+    "file": "70-search-no-results.png",
+    "note": "Global search — nothing matched"
+  },
+  {
+    "n": 71,
+    "folder": "12-empty-states",
+    "file": "71-products-no-results.png",
+    "note": "Product listing — no products match"
+  },
+  {
+    "n": 72,
+    "folder": "12-empty-states",
+    "file": "72-products-no-results-price-filter.png",
+    "note": "Product listing — price filter excludes everything"
+  },
+  {
+    "n": 73,
+    "folder": "12-empty-states",
+    "file": "73-help-no-results.png",
+    "note": "Help Center — no articles match"
+  }
+]

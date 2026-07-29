@@ -1,0 +1,140 @@
+[
+  {
+    "n": 47,
+    "folder": "10-loading-states",
+    "file": "47-loading-product-listing.png",
+    "note": "Product listing — loading"
+  },
+  {
+    "n": 48,
+    "folder": "10-loading-states",
+    "file": "48-loading-product-detail.png",
+    "note": "Product detail — loading"
+  },
+  {
+    "n": 49,
+    "folder": "10-loading-states",
+    "file": "49-loading-compare-sellers.png",
+    "note": "Compare sellers — loading"
+  },
+  {
+    "n": 50,
+    "folder": "10-loading-states",
+    "file": "50-loading-repair-search.png",
+    "note": "Repair search — loading"
+  },
+  {
+    "n": 51,
+    "folder": "10-loading-states",
+    "file": "51-loading-repair-detail.png",
+    "note": "Repair detail — loading"
+  },
+  {
+    "n": 52,
+    "folder": "10-loading-states",
+    "file": "52-loading-repair-comparison.png",
+    "note": "Repair comparison — loading"
+  },
+  {
+    "n": 53,
+    "folder": "10-loading-states",
+    "file": "53-loading-global-search.png",
+    "note": "Global search — searching"
+  },
+  {
+    "n": 54,
+    "folder": "10-loading-states",
+    "file": "54-loading-my-repairs.png",
+    "note": "My Repairs — loading"
+  },
+  {
+    "n": 55,
+    "folder": "10-loading-states",
+    "file": "55-loading-booking-timeline.png",
+    "note": "Repair timeline — loading"
+  },
+  {
+    "n": 56,
+    "folder": "10-loading-states",
+    "file": "56-loading-order-history.png",
+    "note": "Order history — loading"
+  },
+  {
+    "n": 57,
+    "folder": "10-loading-states",
+    "file": "57-loading-order-tracking.png",
+    "note": "Order tracking — loading"
+  },
+  {
+    "n": 58,
+    "folder": "10-loading-states",
+    "file": "58-loading-account.png",
+    "note": "Account profile — loading"
+  },
+  {
+    "n": 59,
+    "folder": "10-loading-states",
+    "file": "59-loading-seller-dashboard.png",
+    "note": "Seller dashboard — loading"
+  },
+  {
+    "n": 60,
+    "folder": "10-loading-states",
+    "file": "60-loading-admin-panel.png",
+    "note": "Admin panel — loading"
+  },
+  {
+    "n": 61,
+    "folder": "11-form-validation",
+    "file": "61-login-invalid-credentials.png",
+    "note": "Login — wrong credentials"
+  },
+  {
+    "n": 62,
+    "folder": "11-form-validation",
+    "file": "62-login-empty-fields.png",
+    "note": "Login — empty fields"
+  },
+  {
+    "n": 63,
+    "folder": "11-form-validation",
+    "file": "63-signup-invalid-input.png",
+    "note": "Signup — invalid email / password mismatch"
+  },
+  {
+    "n": 64,
+    "folder": "11-form-validation",
+    "file": "64-forgot-password-invalid-email.png",
+    "note": "Forgot password — invalid email"
+  },
+  {
+    "n": 65,
+    "folder": "11-form-validation",
+    "file": "65-checkout-missing-fields.png",
+    "note": "Checkout — required fields missing"
+  },
+  {
+    "n": 66,
+    "folder": "11-form-validation",
+    "file": "66-checkout-invalid-email.png",
+    "note": "Checkout — invalid email address"
+  },
+  {
+    "n": 67,
+    "folder": "11-form-validation",
+    "file": "67-listing-empty-required.png",
+    "note": "Listing — required fields missing"
+  },
+  {
+    "n": 68,
+    "folder": "11-form-validation",
+    "file": "68-listing-price-range-invalid.png",
+    "note": "Listing — min price exceeds max"
+  },
+  {
+    "n": 69,
+    "folder": "11-form-validation",
+    "file": "69-listing-no-repair-option.png",
+    "note": "Listing — no repair option added"
+  }
+]

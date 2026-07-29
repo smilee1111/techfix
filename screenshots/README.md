@@ -99,6 +99,59 @@ through, real records created — rather than deep-linked to pre-baked states.
 | 45 | `45-seller-listing-edit.png` | Listing form in edit mode, pre-filled |
 | 46 | `46-admin-category-edit.png` | Category edit — type field locked |
 
+## 10 — Loading states
+
+Captured by holding every `/api/**` response open for 9 seconds, so the
+loading branch stays on screen long enough to photograph. On localhost these
+are otherwise invisible.
+
+| # | File | State |
+| --- | --- | --- |
+| 47 | `47-loading-product-listing.png` | Product listing |
+| 48 | `48-loading-product-detail.png` | Product detail |
+| 49 | `49-loading-compare-sellers.png` | Compare sellers |
+| 50 | `50-loading-repair-search.png` | Repair search |
+| 51 | `51-loading-repair-detail.png` | Repair detail |
+| 52 | `52-loading-repair-comparison.png` | Repair comparison |
+| 53 | `53-loading-global-search.png` | Global search |
+| 54 | `54-loading-my-repairs.png` | My Repairs |
+| 55 | `55-loading-booking-timeline.png` | Repair timeline |
+| 56 | `56-loading-order-history.png` | Order history |
+| 57 | `57-loading-order-tracking.png` | Order tracking |
+| 58 | `58-loading-account.png` | Account profile |
+| 59 | `59-loading-seller-dashboard.png` | Seller dashboard |
+| 60 | `60-loading-admin-panel.png` | Admin panel |
+
+## 11 — Form validation
+
+Produced by submitting genuinely invalid input, not by injecting error
+markup. Covers both client-side rules and server-side rejections.
+
+| # | File | Rule demonstrated |
+| --- | --- | --- |
+| 61 | `61-login-invalid-credentials.png` | Wrong password — server rejection |
+| 62 | `62-login-empty-fields.png` | Required fields empty |
+| 63 | `63-signup-invalid-input.png` | Invalid email / password mismatch |
+| 64 | `64-forgot-password-invalid-email.png` | Invalid email format |
+| 65 | `65-checkout-missing-fields.png` | Required delivery fields missing |
+| 66 | `66-checkout-invalid-email.png` | Invalid email address |
+| 67 | `67-listing-empty-required.png` | Required listing fields missing |
+| 68 | `68-listing-price-range-invalid.png` | Minimum price exceeds maximum |
+| 69 | `69-listing-no-repair-option.png` | No bookable repair option added |
+
+## 12 — Empty / no-results states
+
+| # | File | State |
+| --- | --- | --- |
+| 70 | `70-search-no-results.png` | Global search — nothing matched |
+| 71 | `71-products-no-results.png` | Product search — no matches |
+| 72 | `72-products-no-results-price-filter.png` | Price filter excludes everything |
+| 73 | `73-help-no-results.png` | Help Center — no articles match |
+| 74 | `74-repairs-no-results.png` | Repair search — no providers match |
+
+Note: `/repairs` reads its query from the URL (`?q=`) rather than an on-page
+text box — its sidebar is checkbox filters only.
+
 ## Route coverage
 
 All 28 page routes under `src/app/**/page.tsx` are captured, plus the
