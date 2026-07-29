@@ -5,6 +5,8 @@ import Category from "./src/categories/models/category.model";
 import RepairService, { IRepairServiceDocument } from "./src/repairs/models/repairService.model";
 import Booking from "./src/bookings/models/booking.model";
 import RepairStatusLog from "./src/bookings/models/repairStatusLog.model";
+import Product from "./src/products/models/product.model";
+import Review from "./src/reviews/models/review.model";
 import {
   UserRole,
   UserRoleType,
@@ -14,6 +16,8 @@ import {
   BookingPaymentMethod,
   BookingStatus,
   RepairStage,
+  ProductCondition,
+  AuthenticityLabel,
 } from "./src/config/constants";
 
 /**
@@ -335,7 +339,144 @@ async function importData() {
     updatedBy: iMaster._id,
   });
 
-  console.log(`Seeded ${SELLERS.length} sellers, 1 customer, 1 admin, ${listings.length} listings, 3 bookings.`);
+  // ─── Products (spare parts + certified devices) ───────────────────
+  const partsCategory = await Category.findOneAndUpdate(
+    { name: "Spare Parts" },
+    {
+      name: "Spare Parts",
+      slug: "spare-parts",
+      type: CategoryType.PRODUCT,
+      description: "Genuine and third-party replacement components",
+    },
+    { upsert: true, returnDocument: "after" }
+  );
+
+  await Product.deleteMany({ seller: { $in: sellerDocs.map((s) => s._id) } });
+
+  const products = await Product.insertMany([
+    {
+      seller: screenSavvy._id,
+      category: partsCategory._id,
+      title: "iPhone 14 Pro OLED Screen",
+      brand: "Apple",
+      modelName: "iPhone 14 Pro",
+      description:
+        "Genuine Apple OLED display assembly with True Tone support. Pulled from certified refurbished stock and fully tested.",
+      price: 189,
+      originalPrice: 229,
+      condition: ProductCondition.REFURBISHED,
+      authenticityLabel: AuthenticityLabel.GENUINE,
+      authenticityChecks: [
+        { label: "Serial number verified", passed: true },
+        { label: "True Tone functional", passed: true },
+        { label: "Original Apple packaging", passed: false },
+      ],
+      certificateId: "TF-CERT-88213",
+      warranty: "6 months",
+      stock: 8,
+      specs: [
+        { label: "Panel", value: "OLED Super Retina XDR" },
+        { label: "Resolution", value: "2556 x 1179" },
+        { label: "Touch", value: "Calibrated" },
+      ],
+      compatibility: ["iPhone 14 Pro"],
+      city: "Kathmandu",
+      isVerified: true,
+    },
+    {
+      seller: quickFixLab._id,
+      category: partsCategory._id,
+      title: "Samsung S22 Display Unit",
+      brand: "Samsung",
+      modelName: "Galaxy S22",
+      description:
+        "Dynamic AMOLED 2X replacement unit with frame. Brand new, sealed, sourced through an authorised distributor.",
+      price: 145,
+      condition: ProductCondition.NEW,
+      authenticityLabel: AuthenticityLabel.GENUINE,
+      authenticityChecks: [
+        { label: "Distributor invoice on file", passed: true },
+        { label: "Factory seal intact", passed: true },
+      ],
+      certificateId: "TF-CERT-41902",
+      warranty: "12 months",
+      stock: 3,
+      specs: [
+        { label: "Panel", value: "Dynamic AMOLED 2X" },
+        { label: "Refresh rate", value: "120 Hz" },
+        { label: "Includes", value: "Frame + adhesive" },
+      ],
+      compatibility: ["Galaxy S22", "Galaxy S22 5G"],
+      city: "Lalitpur",
+      isVerified: true,
+    },
+    {
+      seller: iMaster._id,
+      category: partsCategory._id,
+      title: "Battery – iPhone 13 Series",
+      brand: "Apple",
+      modelName: "iPhone 13",
+      description:
+        "High-capacity third-party replacement battery. Cycle-tested to 500 charges with over 90% retained capacity.",
+      price: 39,
+      originalPrice: 55,
+      condition: ProductCondition.NEW,
+      authenticityLabel: AuthenticityLabel.THIRD_PARTY,
+      authenticityChecks: [
+        { label: "Capacity independently tested", passed: true },
+        { label: "Apple-original cell", passed: false },
+      ],
+      warranty: "3 months",
+      stock: 24,
+      specs: [
+        { label: "Capacity", value: "3240 mAh" },
+        { label: "Cycles", value: "500+" },
+      ],
+      compatibility: ["iPhone 13", "iPhone 13 Pro"],
+      city: "Kathmandu",
+    },
+    {
+      seller: techHub._id,
+      category: partsCategory._id,
+      title: "USB-C Port Module",
+      brand: "Generic",
+      description:
+        "Replacement USB-C charging port flex assembly for a range of Android handsets. Sold untested and as-is.",
+      price: 14,
+      condition: ProductCondition.USED,
+      authenticityLabel: AuthenticityLabel.THIRD_PARTY,
+      authenticityChecks: [{ label: "Visual inspection only", passed: true }],
+      stock: 0,
+      specs: [{ label: "Connector", value: "USB-C 2.0" }],
+      compatibility: ["Various Android"],
+      city: "Bhaktapur",
+    },
+    {
+      seller: quickFixHub._id,
+      category: partsCategory._id,
+      title: "64-Bit Pro Repair Toolkit",
+      brand: "iFixit",
+      description:
+        "64-piece precision driver kit covering virtually every fastener used in modern phones, tablets and laptops.",
+      price: 72,
+      condition: ProductCondition.NEW,
+      authenticityLabel: AuthenticityLabel.GENUINE,
+      authenticityChecks: [{ label: "Authorised reseller", passed: true }],
+      warranty: "Lifetime on drivers",
+      stock: 11,
+      specs: [
+        { label: "Pieces", value: "64" },
+        { label: "Case", value: "Hard shell" },
+      ],
+      compatibility: ["Universal"],
+      city: "Kathmandu",
+      isVerified: true,
+    },
+  ]);
+
+  console.log(
+    `Seeded ${SELLERS.length} sellers, 1 customer, 1 admin, ${listings.length} listings, 3 bookings, ${products.length} products.`
+  );
   console.log(`All seeded accounts use the password: Seed@12345`);
   await mongoose.disconnect();
   process.exit(0);
@@ -354,8 +495,11 @@ async function destroyData() {
   await RepairStatusLog.deleteMany({ booking: { $in: bookingIds } });
   await Booking.deleteMany({ _id: { $in: bookingIds } });
   await RepairService.deleteMany({ provider: { $in: userIds } });
+  await Review.deleteMany({ user: { $in: userIds } });
+  await Product.deleteMany({ seller: { $in: userIds } });
   await User.deleteMany({ email: { $in: SEED_EMAILS } });
   await Category.deleteOne({ slug: "screen-repair" });
+  await Category.deleteOne({ slug: "spare-parts" });
 
   console.log("Seed data removed.");
   await mongoose.disconnect();

@@ -50,6 +50,22 @@ export const ENDPOINTS = {
     updateStatus: (id: string) => `${API_BASE_URL}/bookings/${id}/status`,
     statusHistory: (id: string) => `${API_BASE_URL}/bookings/${id}/status`,
   },
+  products: {
+    search: `${API_BASE_URL}/products`,
+    getById: (id: string) => `${API_BASE_URL}/products/${id}`,
+    compare: (ids: string[]) => `${API_BASE_URL}/products/compare?ids=${ids.join(",")}`,
+    brands: `${API_BASE_URL}/products/brands`,
+    mine: `${API_BASE_URL}/products/mine`,
+    create: `${API_BASE_URL}/products`,
+    update: (id: string) => `${API_BASE_URL}/products/${id}`,
+    setActive: (id: string) => `${API_BASE_URL}/products/${id}/active`,
+    setVerified: (id: string) => `${API_BASE_URL}/products/${id}/verify`,
+  },
+  reviews: {
+    list: (targetType: string, target: string) =>
+      `${API_BASE_URL}/reviews?targetType=${targetType}&target=${target}`,
+    create: `${API_BASE_URL}/reviews`,
+  },
   uploads: {
     repairPhotos: `${API_BASE_URL}/uploads/repair-photos`,
   },

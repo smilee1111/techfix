@@ -5,6 +5,8 @@ import repairRoutes from "../repairs/routes/repair.routes";
 import estimateRoutes from "../estimate/routes/estimate.routes";
 import bookingRoutes from "../bookings/routes/booking.routes";
 import uploadRoutes from "../uploads/upload.routes";
+import productRoutes from "../products/routes/product.routes";
+import reviewRoutes from "../reviews/routes/review.routes";
 
 
 /**
@@ -22,10 +24,11 @@ export const registerRoutes = (app: Application): void => {
   apiRouter.use("/estimates", estimateRoutes);
   apiRouter.use("/bookings", bookingRoutes);
   apiRouter.use("/uploads", uploadRoutes);
+  apiRouter.use("/products", productRoutes);
+  apiRouter.use("/reviews", reviewRoutes);
 
-  // apiRouter.use("/products", productRoutes);  // TODO
-  // apiRouter.use("/orders", orderRoutes);      // TODO
-  // apiRouter.use("/help", helpRoutes);         // TODO
+  // apiRouter.use("/orders", orderRoutes);      // TODO — sprint 6
+  // apiRouter.use("/help", helpRoutes);         // TODO — sprint 6
 
 
   // ─── Health check ───────────────────────────────────────────
