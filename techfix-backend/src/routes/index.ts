@@ -2,6 +2,9 @@ import { Router, Application } from "express";
 import authRoutes from "../auth/routes/auth.routes";
 import categoryRoutes from "../categories/routes/category.routes";
 import repairRoutes from "../repairs/routes/repair.routes";
+import estimateRoutes from "../estimate/routes/estimate.routes";
+import bookingRoutes from "../bookings/routes/booking.routes";
+import uploadRoutes from "../uploads/upload.routes";
 
 
 /**
@@ -16,11 +19,12 @@ export const registerRoutes = (app: Application): void => {
   apiRouter.use("/auth", authRoutes);
   apiRouter.use("/categories", categoryRoutes);
   apiRouter.use("/repairs", repairRoutes);
+  apiRouter.use("/estimates", estimateRoutes);
+  apiRouter.use("/bookings", bookingRoutes);
+  apiRouter.use("/uploads", uploadRoutes);
 
   // apiRouter.use("/products", productRoutes);  // TODO
-  // apiRouter.use("/bookings", bookingRoutes);  // TODO
   // apiRouter.use("/orders", orderRoutes);      // TODO
-  // apiRouter.use("/estimates", estimateRoutes);// TODO
   // apiRouter.use("/help", helpRoutes);         // TODO
 
 

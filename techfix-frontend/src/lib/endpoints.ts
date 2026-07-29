@@ -16,14 +16,41 @@ export const ENDPOINTS = {
     resetPassword: `${API_BASE_URL}/auth/reset-password`,
     addresses: `${API_BASE_URL}/auth/me/addresses`,
     removeAddress: (index: number) => `${API_BASE_URL}/auth/me/addresses/${index}`,
+    users: (role?: string) =>
+      role ? `${API_BASE_URL}/auth/users?role=${role}` : `${API_BASE_URL}/auth/users`,
+    verifySeller: (id: string) => `${API_BASE_URL}/auth/users/${id}/verify-seller`,
     socialLogin: (provider: "google" | "facebook") => `${API_BASE_URL}/auth/${provider}`,
   },
   repairs: {
     search: `${API_BASE_URL}/repairs`,
     getById: (id: string) => `${API_BASE_URL}/repairs/${id}`,
     compare: (ids: string[]) => `${API_BASE_URL}/repairs/compare?ids=${ids.join(",")}`,
+    mine: `${API_BASE_URL}/repairs/mine`,
+    create: `${API_BASE_URL}/repairs`,
+    update: (id: string) => `${API_BASE_URL}/repairs/${id}`,
+    setActive: (id: string) => `${API_BASE_URL}/repairs/${id}/active`,
+    setVerified: (id: string) => `${API_BASE_URL}/repairs/${id}/verify`,
   },
   categories: {
     list: `${API_BASE_URL}/categories`,
+    byType: (type: "repair" | "product") => `${API_BASE_URL}/categories?type=${type}`,
+    create: `${API_BASE_URL}/categories`,
+    update: (id: string) => `${API_BASE_URL}/categories/${id}`,
+    remove: (id: string) => `${API_BASE_URL}/categories/${id}`,
+  },
+  estimates: {
+    create: `${API_BASE_URL}/estimates`,
+    getById: (id: string) => `${API_BASE_URL}/estimates/${id}`,
+  },
+  bookings: {
+    create: `${API_BASE_URL}/bookings`,
+    getById: (id: string) => `${API_BASE_URL}/bookings/${id}`,
+    mine: `${API_BASE_URL}/bookings/mine`,
+    incoming: `${API_BASE_URL}/bookings/incoming`,
+    updateStatus: (id: string) => `${API_BASE_URL}/bookings/${id}/status`,
+    statusHistory: (id: string) => `${API_BASE_URL}/bookings/${id}/status`,
+  },
+  uploads: {
+    repairPhotos: `${API_BASE_URL}/uploads/repair-photos`,
   },
 } as const;

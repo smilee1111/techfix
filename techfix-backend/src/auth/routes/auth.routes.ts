@@ -1,6 +1,6 @@
 import { Router } from "express";
 import { AuthController } from "../controllers/auth.controller";
-import { authenticate } from "../../middlewares/auth.middleware";
+import { authenticate, authorize } from "../../middlewares/auth.middleware";
 import { validate } from "../../middlewares/validate.middleware";
 import { authLimiter } from "../../middlewares/rateLimit.middleware";
 import {
@@ -12,7 +12,10 @@ import {
   addAddressDto,
   forgotPasswordDto,
   resetPasswordDto,
+  listUsersDto,
+  setSellerVerifiedDto,
 } from "../dtos/auth.dto";
+import { UserRole } from "../../config/constants";
 
 const router = Router();
 const authController = new AuthController();
@@ -95,6 +98,26 @@ router.delete(
   "/me/addresses/:index",
   authenticate,
   authController.removeAddress
+);
+
+// ─── Admin-only routes ──────────────────────────────────────────
+
+// GET /api/auth/users?role=seller — user directory for the admin panel
+router.get(
+  "/users",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  validate(listUsersDto, "query"),
+  authController.listUsers
+);
+
+// PATCH /api/auth/users/:id/verify-seller — grant or revoke the trust badge
+router.patch(
+  "/users/:id/verify-seller",
+  authenticate,
+  authorize(UserRole.ADMIN),
+  validate(setSellerVerifiedDto),
+  authController.setSellerVerified
 );
 
 export default router;

@@ -15,6 +15,7 @@ import { NotFoundError } from "../../errors/NotFoundError";
 import { ValidationError } from "../../errors/ValidationError";
 import { IUserDocument } from "../models/user.model";
 import { sendMail } from "../../utils/mailer";
+import { UserRole, UserRoleType } from "../../config/constants";
 
 interface IResetTokenPayload {
   userId: string;
@@ -185,6 +186,38 @@ export class AuthService {
       throw new NotFoundError("User");
     }
     return { user: user.toJSON() };
+  }
+
+  // ─── Admin: user directory & seller verification ──────────────
+
+  /**
+   * Lists users for the admin panel. `toJSON()` drops password and
+   * refreshToken (both select:false), so no secret ever leaves here.
+   */
+  async listUsers(role?: UserRoleType) {
+    const users = await this.authRepository.findAllByRole(role);
+    return { users: users.map((u) => u.toJSON()) };
+  }
+
+  /**
+   * Flips a seller's verified badge. Verification is the platform's core
+   * trust signal, so it is admin-only and never self-assignable — the same
+   * reasoning that keeps `role` out of the public registration DTO.
+   */
+  async setSellerVerified(userId: string, isVerifiedSeller: boolean) {
+    const target = await this.authRepository.findById(userId);
+    if (!target) {
+      throw new NotFoundError("User");
+    }
+    if (target.role !== UserRole.SELLER) {
+      throw new ValidationError("Only seller accounts can be verified");
+    }
+
+    const user = await this.authRepository.updateById(userId, {
+      isVerifiedSeller,
+    } as Partial<IUserDocument>);
+
+    return { user: user!.toJSON() };
   }
 
   // ─── Update Profile ───────────────────────────────────────────

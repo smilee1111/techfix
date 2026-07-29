@@ -3,7 +3,7 @@
 import { useState, useEffect, useCallback } from "react";
 import { useRouter } from "next/navigation";
 import { getCurrentUser, updateProfile as updateProfileApi } from "@/features/auth/api/authApi";
-import { getAuthToken } from "@/lib/cookie";
+import { getValidAccessToken } from "@/lib/session";
 import type { AccountProfile } from "@/features/auth/types/auth.types";
 
 interface UseProfileReturn {
@@ -28,7 +28,7 @@ export function useProfile(): UseProfileReturn {
   useEffect(() => {
     let cancelled = false;
 
-    getAuthToken().then((token) => {
+    getValidAccessToken().then((token) => {
       if (cancelled) return;
       if (!token) {
         router.push("/login");
@@ -53,7 +53,7 @@ export function useProfile(): UseProfileReturn {
   }, [router]);
 
   const updateProfile = useCallback(async (updates: { name?: string; phone?: string }) => {
-    const token = await getAuthToken();
+    const token = await getValidAccessToken();
     if (!token) return;
 
     setIsSaving(true);

@@ -1,8 +1,10 @@
 // ─── User Roles ──────────────────────────────────────────────────
+// Exactly 3 roles. "seller" covers anyone listing something on the
+// marketplace — repair providers and product sellers alike — there is
+// no separate repair_provider role.
 export const UserRole = {
   CUSTOMER: "customer",
   SELLER: "seller",
-  REPAIR_PROVIDER: "repair_provider",
   ADMIN: "admin",
 } as const;
 export type UserRoleType = (typeof UserRole)[keyof typeof UserRole];
@@ -42,11 +44,29 @@ export const BookingType = {
 } as const;
 export type BookingTypeType = (typeof BookingType)[keyof typeof BookingType];
 
-// ─── Repair Stages (5-stage timeline from Design_guide.md) ──────
+// ─── Booking Payment Method (booking-time preference, not a real gateway
+// charge yet — separate from PaymentMethod, which is Nepal-specific and
+// used for actual product-order payment integration) ────────────────────
+export const BookingPaymentMethod = {
+  CARD: "card",
+  DIGITAL_WALLET: "digital_wallet",
+  PAY_AT_PICKUP: "pay_at_pickup",
+} as const;
+export type BookingPaymentMethodType =
+  (typeof BookingPaymentMethod)[keyof typeof BookingPaymentMethod];
+
+// ─── Repair Stages (7-stage timeline from the "Repair Timeline" Figma frame) ──
+// Declaration order IS the timeline order — the detail page renders these as a
+// ladder and derives done/current/upcoming from each stage's index, so never
+// reorder these without checking BookingDetail.tsx.
+// Supersedes the 5-stage list in Design_guide.md, which omitted the two waiting
+// states that matter most to a customer: parts on order, and post-repair QC.
 export const RepairStage = {
   RECEIVED: "received",
   DIAGNOSING: "diagnosing",
+  AWAITING_PARTS: "awaiting_parts",
   REPAIRING: "repairing",
+  QUALITY_CHECK: "quality_check",
   READY_FOR_PICKUP: "ready_for_pickup",
   DELIVERED: "delivered",
 } as const;

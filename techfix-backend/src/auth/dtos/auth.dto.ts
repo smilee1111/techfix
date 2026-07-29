@@ -8,11 +8,7 @@ const phoneRegex = /^\+977-?\d{10}$/;
 // UserRole.ADMIN — admin accounts must only ever be created by an existing
 // admin (or a trusted seed/DB action), never through the public register
 // endpoint. Widening this list is a security decision, not a convenience one.
-const PUBLIC_REGISTRATION_ROLES = [
-  UserRole.CUSTOMER,
-  UserRole.SELLER,
-  UserRole.REPAIR_PROVIDER,
-] as const;
+const PUBLIC_REGISTRATION_ROLES = [UserRole.CUSTOMER, UserRole.SELLER] as const;
 
 // ─── Register DTO ───────────────────────────────────────────────
 export const registerDto = z.object({
@@ -116,3 +112,17 @@ export const addAddressDto = z.object({
 });
 
 export type AddAddressDto = z.infer<typeof addAddressDto>;
+
+// ─── Admin: List Users Query DTO ────────────────────────────────
+export const listUsersDto = z.object({
+  role: z.enum(Object.values(UserRole) as [string, ...string[]]).optional(),
+});
+
+export type ListUsersDto = z.infer<typeof listUsersDto>;
+
+// ─── Admin: Set Seller Verified DTO ─────────────────────────────
+export const setSellerVerifiedDto = z.object({
+  isVerifiedSeller: z.boolean(),
+});
+
+export type SetSellerVerifiedDto = z.infer<typeof setSellerVerifiedDto>;

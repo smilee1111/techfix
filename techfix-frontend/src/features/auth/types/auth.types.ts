@@ -42,7 +42,7 @@ export interface AccountProfile {
   fullName: string;
   email: string;
   phone: string;
-  role: "customer" | "seller" | "repair_provider" | "admin";
+  role: "customer" | "seller" | "admin";
   avatarUrl?: string;
   isVerified: boolean;
   isVerifiedSeller: boolean;

@@ -2,26 +2,93 @@ import mongoose from "mongoose";
 import { env } from "./src/config/env";
 import User from "./src/auth/models/user.model";
 import Category from "./src/categories/models/category.model";
-import RepairService from "./src/repairs/models/repairService.model";
-import { UserRole, CategoryType, ServiceOption } from "./src/config/constants";
+import RepairService, { IRepairServiceDocument } from "./src/repairs/models/repairService.model";
+import Booking from "./src/bookings/models/booking.model";
+import RepairStatusLog from "./src/bookings/models/repairStatusLog.model";
+import {
+  UserRole,
+  UserRoleType,
+  CategoryType,
+  ServiceOption,
+  BookingType,
+  BookingPaymentMethod,
+  BookingStatus,
+  RepairStage,
+} from "./src/config/constants";
 
 /**
- * Seeds (or clears) demo data for repair-provider browsing:
- * a handful of repair-provider accounts, a repair category, and the
- * sample repair listings shown in the TechFix Figma designs
- * (Repair Search Results / Service Detail / Comparison View).
+ * Seeds (or clears) demo data for the full two-sided marketplace flow:
+ *  - 5 SELLER accounts, each owning one Samsung Galaxy S23 screen-repair
+ *    listing (so "browse different sellers, compare, book" is testable)
+ *  - 1 CUSTOMER account with 3 sample bookings in different repair stages,
+ *    each with real RepairStatusLog history (so "My Repairs" and the
+ *    seller's "incoming bookings" queue both have something to show)
+ *  - 1 ADMIN account
+ *
+ * Every seeded account uses the same password so you can log in as any
+ * of them locally: Seed@12345
  *
  * Usage: ts-node seed-data.ts -i   (import)
  *        ts-node seed-data.ts -d   (delete)
  */
 
-const PROVIDERS = [
+const SELLERS = [
   { name: "ScreenSavvy Co.", email: "screensavvy@seed.techfix.dev", phone: "+977-9800000001" },
   { name: "QuickFix Lab Center", email: "quickfixlab@seed.techfix.dev", phone: "+977-9800000002" },
   { name: "iMaster Repairs", email: "imaster@seed.techfix.dev", phone: "+977-9800000003" },
   { name: "TechHub Pro", email: "techhubpro@seed.techfix.dev", phone: "+977-9800000004" },
   { name: "QuickFix Hub", email: "quickfixhub@seed.techfix.dev", phone: "+977-9800000005" },
 ];
+
+const CUSTOMER = { name: "Demo Customer", email: "customer@seed.techfix.dev", phone: "+977-9800000099" };
+const ADMIN = { name: "Demo Admin", email: "admin@seed.techfix.dev", phone: "+977-9800000098" };
+
+const SEED_EMAILS = [...SELLERS.map((s) => s.email), CUSTOMER.email, ADMIN.email];
+
+const PICKUP_DELIVERY_FEE = 12;
+const SERVICE_FEE = 5;
+
+function generateReferenceId(): string {
+  const digits = Math.floor(10000 + Math.random() * 90000);
+  const letter = String.fromCharCode(65 + Math.floor(Math.random() * 26));
+  return `TF-${digits}-${letter}`;
+}
+
+async function findOrCreateUser(data: {
+  name: string;
+  email: string;
+  phone: string;
+  role: UserRoleType;
+  isVerifiedSeller?: boolean;
+}) {
+  // findOneAndUpdate bypasses the User model's pre("save") hash hook, which
+  // is how an earlier version of this script ended up with plaintext
+  // passwords. Load-or-build + .save() instead so bcrypt hashing runs.
+  let user = await User.findOne({ email: data.email });
+  if (!user) {
+    user = new User({
+      name: data.name,
+      email: data.email,
+      phone: data.phone,
+      password: "Seed@12345",
+      role: data.role,
+      isVerified: true,
+      isVerifiedSeller: data.isVerifiedSeller ?? false,
+    });
+    await user.save();
+  } else {
+    // Self-healing: re-running the seed script against a database seeded
+    // before a schema/role change (e.g. the repair_provider -> seller
+    // migration) must not silently leave stale field values in place.
+    user.name = data.name;
+    user.phone = data.phone;
+    user.role = data.role;
+    user.isVerified = true;
+    user.isVerifiedSeller = data.isVerifiedSeller ?? false;
+    await user.save();
+  }
+  return user;
+}
 
 async function importData() {
   await mongoose.connect(env.MONGODB_URI);
@@ -38,31 +105,18 @@ async function importData() {
     { upsert: true, returnDocument: "after" }
   );
 
-  const providerDocs = [];
-  for (const p of PROVIDERS) {
-    // findOneAndUpdate bypasses the User model's pre("save") hash hook,
-    // which is how the seeded accounts ended up with plaintext passwords.
-    // Load-or-build + .save() instead so bcrypt hashing actually runs.
-    let user = await User.findOne({ email: p.email });
-    if (!user) {
-      user = new User({
-        name: p.name,
-        email: p.email,
-        phone: p.phone,
-        password: "Seed@12345",
-        role: UserRole.REPAIR_PROVIDER,
-        isVerified: true,
-        isVerifiedSeller: true,
-      });
-      await user.save();
-    }
-    providerDocs.push(user);
+  const sellerDocs = [];
+  for (const s of SELLERS) {
+    sellerDocs.push(await findOrCreateUser({ ...s, role: UserRole.SELLER, isVerifiedSeller: true }));
   }
-  const [screenSavvy, quickFixLab, iMaster, techHub, quickFixHub] = providerDocs;
+  const [screenSavvy, quickFixLab, iMaster, techHub, quickFixHub] = sellerDocs;
+
+  const customer = await findOrCreateUser({ ...CUSTOMER, role: UserRole.CUSTOMER });
+  await findOrCreateUser({ ...ADMIN, role: UserRole.ADMIN });
 
   await RepairService.deleteMany({ title: { $regex: /Samsung Galaxy S23 Screen Repair/ } });
 
-  const listings = [
+  const listingsData = [
     {
       provider: screenSavvy._id,
       title: "Samsung Galaxy S23 Screen Repair",
@@ -179,11 +233,110 @@ async function importData() {
     },
   ];
 
-  for (const listing of listings) {
-    await RepairService.create({ ...listing, category: category._id });
+  const listings: IRepairServiceDocument[] = [];
+  for (const listing of listingsData) {
+    listings.push(await RepairService.create({ ...listing, category: category._id }));
+  }
+  const [screenSavvyListing, quickFixLabListing, iMasterListing] = listings;
+
+  // ─── Sample bookings for the demo customer, each at a different stage ──
+  await Booking.deleteMany({ user: customer._id });
+  await RepairStatusLog.deleteMany({});
+
+  async function seedBooking(opts: {
+    listing: (typeof listings)[number];
+    optionName: string;
+    price: number;
+    bookingType: (typeof BookingType)[keyof typeof BookingType];
+    history: (typeof RepairStage)[keyof typeof RepairStage][];
+    updatedBy: mongoose.Types.ObjectId;
+  }) {
+    const pickupDeliveryFee = opts.bookingType === BookingType.PICKUP ? PICKUP_DELIVERY_FEE : 0;
+    const total = opts.price + pickupDeliveryFee + SERVICE_FEE;
+    const currentStage = opts.history[opts.history.length - 1];
+    const status = currentStage === RepairStage.DELIVERED ? BookingStatus.COMPLETED : BookingStatus.IN_PROGRESS;
+
+    const estimatedPickupDate = new Date();
+    estimatedPickupDate.setDate(estimatedPickupDate.getDate() + 2);
+    estimatedPickupDate.setHours(10, 0, 0, 0);
+
+    const booking = await Booking.create({
+      referenceId: generateReferenceId(),
+      user: customer._id,
+      repairService: opts.listing._id,
+      repairOptionName: opts.optionName,
+      bookingType: opts.bookingType,
+      pickupAddress: opts.bookingType === BookingType.PICKUP ? "Baneshwor, Kathmandu" : undefined,
+      contactName: customer.name,
+      contactPhone: customer.phone,
+      contactEmail: customer.email,
+      issueDescription: "Screen cracked after a drop, touch response is patchy near the edges.",
+      issuePhotos: [],
+      paymentMethod: BookingPaymentMethod.PAY_AT_PICKUP,
+      subtotal: opts.price,
+      pickupDeliveryFee,
+      serviceFee: SERVICE_FEE,
+      total,
+      status,
+      currentStage,
+      estimatedPickupDate,
+    });
+
+    for (const stage of opts.history) {
+      await RepairStatusLog.create({
+        booking: booking._id,
+        stage,
+        updatedBy: opts.updatedBy,
+      });
+    }
+
+    return booking;
   }
 
-  console.log(`Seeded ${PROVIDERS.length} providers and ${listings.length} repair listings.`);
+  await seedBooking({
+    listing: screenSavvyListing,
+    optionName: "Screen Replacement",
+    price: 95,
+    bookingType: BookingType.PICKUP,
+    // Parked mid-journey on a waiting state, so the timeline demo shows an
+    // in-progress repair that isn't simply "being worked on right now".
+    history: [
+      RepairStage.RECEIVED,
+      RepairStage.DIAGNOSING,
+      RepairStage.AWAITING_PARTS,
+    ],
+    updatedBy: screenSavvy._id,
+  });
+
+  await seedBooking({
+    listing: quickFixLabListing,
+    optionName: "Battery Replacement",
+    price: 59,
+    bookingType: BookingType.DROPOFF,
+    // Walks every stage, so the completed timeline renders full-length.
+    history: [
+      RepairStage.RECEIVED,
+      RepairStage.DIAGNOSING,
+      RepairStage.AWAITING_PARTS,
+      RepairStage.REPAIRING,
+      RepairStage.QUALITY_CHECK,
+      RepairStage.READY_FOR_PICKUP,
+      RepairStage.DELIVERED,
+    ],
+    updatedBy: quickFixLab._id,
+  });
+
+  await seedBooking({
+    listing: iMasterListing,
+    optionName: "Screen Replacement",
+    price: 65,
+    bookingType: BookingType.DROPOFF,
+    history: [RepairStage.RECEIVED],
+    updatedBy: iMaster._id,
+  });
+
+  console.log(`Seeded ${SELLERS.length} sellers, 1 customer, 1 admin, ${listings.length} listings, 3 bookings.`);
+  console.log(`All seeded accounts use the password: Seed@12345`);
   await mongoose.disconnect();
   process.exit(0);
 }
@@ -192,12 +345,16 @@ async function destroyData() {
   await mongoose.connect(env.MONGODB_URI);
   console.log("Connected. Removing seed data...");
 
-  const providerEmails = PROVIDERS.map((p) => p.email);
-  const providers = await User.find({ email: { $in: providerEmails } }).select("_id");
-  const providerIds = providers.map((p) => p._id);
+  const users = await User.find({ email: { $in: SEED_EMAILS } }).select("_id");
+  const userIds = users.map((u) => u._id);
 
-  await RepairService.deleteMany({ provider: { $in: providerIds } });
-  await User.deleteMany({ email: { $in: providerEmails } });
+  const bookings = await Booking.find({ user: { $in: userIds } }).select("_id");
+  const bookingIds = bookings.map((b) => b._id);
+
+  await RepairStatusLog.deleteMany({ booking: { $in: bookingIds } });
+  await Booking.deleteMany({ _id: { $in: bookingIds } });
+  await RepairService.deleteMany({ provider: { $in: userIds } });
+  await User.deleteMany({ email: { $in: SEED_EMAILS } });
   await Category.deleteOne({ slug: "screen-repair" });
 
   console.log("Seed data removed.");

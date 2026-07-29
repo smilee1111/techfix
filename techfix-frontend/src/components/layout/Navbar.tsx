@@ -3,8 +3,9 @@
 import { useState, useEffect } from "react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
-import { Search, ShoppingCart } from "lucide-react";
-import { getAuthToken } from "@/lib/cookie";
+import { Search } from "lucide-react";
+import { getValidAccessToken } from "@/lib/session";
+import { getUserData } from "@/lib/cookie";
 import { useAuth } from "@/features/auth/hooks/useAuth";
 
 /* ─── Types ──────────────────────────────────────────────────────── */
@@ -24,12 +25,21 @@ interface NavbarProps {
 }
 
 /* ─── Data ───────────────────────────────────────────────────────── */
+// Only routes that actually exist. "Buy Products", "Track" and "Help" were
+// scaffolded here ahead of their features and pointed at 404s; they come
+// back when the product and support pages ship.
 const NAV_LINKS: NavLink[] = [
   { label: "Repairs", href: "/repairs" },
-  { label: "Buy Products", href: "/products" },
-  { label: "Track", href: "/track" },
-  { label: "Help", href: "/help" },
+  { label: "Estimate", href: "/estimate" },
 ];
+
+const LOGGED_IN_LINKS: NavLink[] = [{ label: "My Repairs", href: "/my-repairs" }];
+
+/** Extra destinations a role unlocks. */
+const ROLE_LINKS: Record<string, NavLink> = {
+  seller: { label: "Seller Dashboard", href: "/seller/dashboard" },
+  admin: { label: "Admin", href: "/admin" },
+};
 
 /* ─── Component ──────────────────────────────────────────────────── */
 /**
@@ -42,12 +52,13 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
   const pathname = usePathname();
   const { logout } = useAuth();
   const [detectedVariant, setDetectedVariant] = useState<"loggedOut" | "loggedIn">("loggedOut");
+  const [role, setRole] = useState<string | null>(null);
 
   useEffect(() => {
     if (forcedVariant) return;
 
     let cancelled = false;
-    getAuthToken().then((token) => {
+    getValidAccessToken().then((token) => {
       if (!cancelled) setDetectedVariant(token ? "loggedIn" : "loggedOut");
     });
     return () => {
@@ -55,7 +66,27 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
     };
   }, [forcedVariant]);
 
+  // The role drives which extra links appear. It is read from the
+  // user_data cookie, which is a display concern only — every privileged
+  // route is independently enforced by the backend.
+  useEffect(() => {
+    let cancelled = false;
+    getUserData().then((data) => {
+      if (!cancelled) setRole(typeof data?.role === "string" ? data.role : null);
+    });
+    return () => {
+      cancelled = true;
+    };
+  }, []);
+
   const variant = forcedVariant ?? detectedVariant;
+
+  const roleLink = role ? ROLE_LINKS[role] : undefined;
+  const links: NavLink[] = [
+    ...NAV_LINKS,
+    ...(variant === "loggedIn" ? LOGGED_IN_LINKS : []),
+    ...(variant === "loggedIn" && roleLink ? [roleLink] : []),
+  ];
 
   return (
     <header className="navbar">
@@ -67,7 +98,7 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
           </Link>
 
           <nav className="navbar__nav" aria-label="Main navigation">
-            {NAV_LINKS.map((link) => (
+            {links.map((link) => (
               <Link
                 key={link.href}
                 href={link.href}
@@ -91,11 +122,9 @@ export default function Navbar({ variant: forcedVariant }: NavbarProps) {
             </span>
           </div>
 
-          {/* Cart icon */}
-          <Link href="/cart" className="navbar__cart" aria-label="Shopping cart with 2 items">
-            <ShoppingCart size={16} />
-            <span className="navbar__cart-badge">2</span>
-          </Link>
+          {/* The cart icon lived here with a hardcoded badge of "2" and a
+              link to /cart, which does not exist. It returns with the
+              product side, backed by real cart state. */}
 
           {variant === "loggedOut" ? (
             <>

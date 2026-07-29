@@ -3,7 +3,9 @@ import Link from "next/link";
 /* ─── Data ───────────────────────────────────────────────────────── */
 interface FooterColumn {
   title: string;
-  links: { label: string; href: string }[];
+  /** A link without an href is a planned destination, rendered as muted
+   *  text rather than a link into a 404. */
+  links: { label: string; href?: string }[];
 }
 
 const FOOTER_COLUMNS: FooterColumn[] = [
@@ -12,24 +14,24 @@ const FOOTER_COLUMNS: FooterColumn[] = [
     links: [
       { label: "Device Repair", href: "/repairs" },
       { label: "Price Calculator", href: "/estimate" },
-      { label: "Track Order", href: "/track" },
+      { label: "My Repairs", href: "/my-repairs" },
     ],
   },
   {
     title: "PRODUCTS",
     links: [
-      { label: "Certified Devices", href: "/products" },
-      { label: "Spare Parts", href: "/products?category=parts" },
-      { label: "Bulk Orders", href: "/products?category=bulk" },
+      { label: "Certified Devices" },
+      { label: "Spare Parts" },
+      { label: "Bulk Orders" },
     ],
   },
   {
     title: "SUPPORT",
     links: [
-      { label: "Terms of Service", href: "/help/terms" },
-      { label: "Privacy Policy", href: "/help/privacy" },
-      { label: "Contact Support", href: "/help" },
-      { label: "Store Locator", href: "/help/stores" },
+      { label: "Terms of Service" },
+      { label: "Privacy Policy" },
+      { label: "Contact Support" },
+      { label: "Store Locator" },
     ],
   },
 ];
@@ -60,10 +62,14 @@ export default function Footer() {
             <h3 className="footer__column-title">{col.title}</h3>
             <ul className="footer__link-list">
               {col.links.map((link) => (
-                <li key={link.href + link.label}>
-                  <Link href={link.href} className="footer__link">
-                    {link.label}
-                  </Link>
+                <li key={link.label}>
+                  {link.href ? (
+                    <Link href={link.href} className="footer__link">
+                      {link.label}
+                    </Link>
+                  ) : (
+                    <span className="footer__link footer__link--pending">{link.label}</span>
+                  )}
                 </li>
               ))}
             </ul>
