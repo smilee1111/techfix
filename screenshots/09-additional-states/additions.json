@@ -1,0 +1,22 @@
+[
+  {
+    "n": 43,
+    "file": "43-not-found-404.png",
+    "note": "404 page"
+  },
+  {
+    "n": 44,
+    "file": "44-cart-empty.png",
+    "note": "Empty cart state"
+  },
+  {
+    "n": 45,
+    "file": "45-seller-listing-edit.png",
+    "note": "Listing edit form, pre-filled"
+  },
+  {
+    "n": 46,
+    "file": "46-admin-category-edit.png",
+    "note": "Category edit, type locked"
+  }
+]

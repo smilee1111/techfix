@@ -1,0 +1,254 @@
+[
+  {
+    "n": 1,
+    "folder": "01-public",
+    "file": "01-landing-home.png",
+    "note": "Landing page"
+  },
+  {
+    "n": 2,
+    "folder": "01-public",
+    "file": "02-login.png",
+    "note": "Login"
+  },
+  {
+    "n": 3,
+    "folder": "01-public",
+    "file": "03-signup.png",
+    "note": "Signup with role toggle"
+  },
+  {
+    "n": 4,
+    "folder": "01-public",
+    "file": "04-forgot-password.png",
+    "note": "Forgot password"
+  },
+  {
+    "n": 5,
+    "folder": "01-public",
+    "file": "05-reset-password.png",
+    "note": "Reset password"
+  },
+  {
+    "n": 6,
+    "folder": "01-public",
+    "file": "06-help-center.png",
+    "note": "Help Center / FAQ"
+  },
+  {
+    "n": 7,
+    "folder": "01-public",
+    "file": "07-help-center-answer-open.png",
+    "note": "FAQ answer expanded"
+  },
+  {
+    "n": 8,
+    "folder": "01-public",
+    "file": "08-global-search.png",
+    "note": "Global search across both halves"
+  },
+  {
+    "n": 9,
+    "folder": "02-repair-discovery",
+    "file": "09-repair-search-results.png",
+    "note": "Repair search + filters"
+  },
+  {
+    "n": 10,
+    "folder": "02-repair-discovery",
+    "file": "10-repair-service-detail.png",
+    "note": "Provider detail"
+  },
+  {
+    "n": 11,
+    "folder": "02-repair-discovery",
+    "file": "11-repair-comparison.png",
+    "note": "Compare providers"
+  },
+  {
+    "n": 12,
+    "folder": "03-estimate",
+    "file": "12-estimate-step-1-device.png",
+    "note": "Estimate step 1 — device"
+  },
+  {
+    "n": 13,
+    "folder": "03-estimate",
+    "file": "13-estimate-step-2-issue.png",
+    "note": "Estimate step 2 — issue"
+  },
+  {
+    "n": 14,
+    "folder": "03-estimate",
+    "file": "14-estimate-step-3-location.png",
+    "note": "Estimate step 3 — location"
+  },
+  {
+    "n": 15,
+    "folder": "03-estimate",
+    "file": "15-estimate-results.png",
+    "note": "Estimate results + matched shops"
+  },
+  {
+    "n": 16,
+    "folder": "04-products",
+    "file": "16-product-listing.png",
+    "note": "Product listing + filters"
+  },
+  {
+    "n": 17,
+    "folder": "04-products",
+    "file": "17-product-compare-tray.png",
+    "note": "Compare tray with 2 selected"
+  },
+  {
+    "n": 18,
+    "folder": "04-products",
+    "file": "18-product-detail-authenticity.png",
+    "note": "Product detail + authenticity panel"
+  },
+  {
+    "n": 19,
+    "folder": "04-products",
+    "file": "19-compare-sellers.png",
+    "note": "Compare sellers, best match highlighted"
+  },
+  {
+    "n": 20,
+    "folder": "05-order-flow",
+    "file": "20-dashboard-logged-in.png",
+    "note": "Dashboard, logged in"
+  },
+  {
+    "n": 21,
+    "folder": "05-order-flow",
+    "file": "21-product-added-to-cart.png",
+    "note": "Add to cart confirmation"
+  },
+  {
+    "n": 22,
+    "folder": "05-order-flow",
+    "file": "22-cart.png",
+    "note": "Cart with line items and totals"
+  },
+  {
+    "n": 23,
+    "folder": "05-order-flow",
+    "file": "23-checkout-step-1-delivery.png",
+    "note": "Checkout step 1 — delivery"
+  },
+  {
+    "n": 24,
+    "folder": "05-order-flow",
+    "file": "24-checkout-delivery-filled.png",
+    "note": "Delivery details filled"
+  },
+  {
+    "n": 25,
+    "folder": "05-order-flow",
+    "file": "25-checkout-step-2-payment.png",
+    "note": "Checkout step 2 — payment"
+  },
+  {
+    "n": 26,
+    "folder": "05-order-flow",
+    "file": "26-order-success.png",
+    "note": "Order confirmed"
+  },
+  {
+    "n": 27,
+    "folder": "05-order-flow",
+    "file": "27-order-history.png",
+    "note": "Order history"
+  },
+  {
+    "n": 28,
+    "folder": "05-order-flow",
+    "file": "28-order-tracking-timeline.png",
+    "note": "Order tracking timeline"
+  },
+  {
+    "n": 29,
+    "folder": "06-repair-booking",
+    "file": "29-my-repairs.png",
+    "note": "My Repairs list"
+  },
+  {
+    "n": 30,
+    "folder": "06-repair-booking",
+    "file": "30-booking-detail-timeline.png",
+    "note": "Repair 7-stage timeline"
+  },
+  {
+    "n": 31,
+    "folder": "06-repair-booking",
+    "file": "31-booking-timeline-completed.png",
+    "note": "Completed repair timeline"
+  },
+  {
+    "n": 32,
+    "folder": "06-repair-booking",
+    "file": "32-booking-step-1-logistics.png",
+    "note": "Booking step 1 — logistics"
+  },
+  {
+    "n": 33,
+    "folder": "06-repair-booking",
+    "file": "33-booking-step-1-filled.png",
+    "note": "Logistics + issue described"
+  },
+  {
+    "n": 34,
+    "folder": "06-repair-booking",
+    "file": "34-booking-step-2-contact.png",
+    "note": "Booking step 2 — contact"
+  },
+  {
+    "n": 35,
+    "folder": "06-repair-booking",
+    "file": "35-booking-step-3-payment.png",
+    "note": "Booking step 3 — payment"
+  },
+  {
+    "n": 36,
+    "folder": "06-repair-booking",
+    "file": "36-booking-success.png",
+    "note": "Booking confirmed"
+  },
+  {
+    "n": 37,
+    "folder": "06-repair-booking",
+    "file": "37-account-profile.png",
+    "note": "Account profile + real stats"
+  },
+  {
+    "n": 38,
+    "folder": "07-seller",
+    "file": "38-seller-incoming-bookings.png",
+    "note": "Incoming bookings + stage control"
+  },
+  {
+    "n": 39,
+    "folder": "07-seller",
+    "file": "39-seller-my-listings.png",
+    "note": "Seller listings with edit/hide"
+  },
+  {
+    "n": 40,
+    "folder": "07-seller",
+    "file": "40-seller-listing-form.png",
+    "note": "Create listing form"
+  },
+  {
+    "n": 41,
+    "folder": "08-admin",
+    "file": "41-admin-categories.png",
+    "note": "Admin category management"
+  },
+  {
+    "n": 42,
+    "folder": "08-admin",
+    "file": "42-admin-seller-verification.png",
+    "note": "Seller verification queue"
+  }
+]
