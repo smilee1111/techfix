@@ -85,6 +85,8 @@ export const config = {
     "/account/:path*",
     "/bookings/:path*",
     "/my-repairs/:path*",
+    "/orders/:path*",
+    "/checkout/:path*",
     "/login",
     "/signup",
     "/forgot-password",

@@ -105,6 +105,21 @@ export class ProductRepository {
     return Product.distinct("brand", { isActive: true });
   }
 
+  /**
+   * Atomically decrements stock, refusing to go negative.
+   *
+   * The `stock: { $gte: quantity }` guard is part of the update filter, not
+   * a separate read — so two orders racing for the last unit cannot both
+   * succeed. Returns null when the guard rejects.
+   */
+  async decrementStock(id: string, quantity: number): Promise<IProductDocument | null> {
+    return Product.findOneAndUpdate(
+      { _id: id, stock: { $gte: quantity } },
+      { $inc: { stock: -quantity } },
+      { returnDocument: "after" }
+    ).exec();
+  }
+
   /** Keeps the denormalised rating snapshot in step with the reviews collection. */
   async setRatingSummary(
     id: string,

@@ -7,6 +7,7 @@ import bookingRoutes from "../bookings/routes/booking.routes";
 import uploadRoutes from "../uploads/upload.routes";
 import productRoutes from "../products/routes/product.routes";
 import reviewRoutes from "../reviews/routes/review.routes";
+import orderRoutes from "../orders/routes/order.routes";
 
 
 /**
@@ -26,9 +27,10 @@ export const registerRoutes = (app: Application): void => {
   apiRouter.use("/uploads", uploadRoutes);
   apiRouter.use("/products", productRoutes);
   apiRouter.use("/reviews", reviewRoutes);
+  apiRouter.use("/orders", orderRoutes);
 
-  // apiRouter.use("/orders", orderRoutes);      // TODO — sprint 6
-  // apiRouter.use("/help", helpRoutes);         // TODO — sprint 6
+  // Help/FAQ content is static and ships with the frontend — there is no
+  // backend resource behind it, so no /help router exists by design.
 
 
   // ─── Health check ───────────────────────────────────────────

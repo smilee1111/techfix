@@ -20,18 +20,18 @@ const FOOTER_COLUMNS: FooterColumn[] = [
   {
     title: "PRODUCTS",
     links: [
-      { label: "Certified Devices" },
-      { label: "Spare Parts" },
-      { label: "Bulk Orders" },
+      { label: "Browse Products", href: "/products" },
+      { label: "Cart", href: "/cart" },
+      { label: "Order History", href: "/orders" },
     ],
   },
   {
     title: "SUPPORT",
     links: [
+      { label: "Help Center", href: "/help" },
+      { label: "Search", href: "/search" },
       { label: "Terms of Service" },
       { label: "Privacy Policy" },
-      { label: "Contact Support" },
-      { label: "Store Locator" },
     ],
   },
 ];
